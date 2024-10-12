@@ -73,3 +73,7 @@ crashlytics-build.properties
 
 Ignore/
 .git.bfg-report/
+.idea/
+
+# Big file
+Assets\Scenes\Desert\LightingData.asset

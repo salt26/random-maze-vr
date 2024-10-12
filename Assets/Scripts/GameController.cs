@@ -50,20 +50,21 @@ public class GameController : MonoBehaviour
     public int mazeInnerRows = 5;
     public float mazeDropProbability = 0.02f;   // When this is 0.0f, only one way exists
 
-    private float time;
-    private int[,] m_Maze;
-    private bool hasExited = false;
+    private float _time;
+    private int[,] _maze;
+    private bool _hasExited = false;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-    private bool hasPressedShift = false;
+    private bool _hasPressedShift = false;
 #endif
-    private bool isTimeout = false;
-    private bool isMenuShowed = false;
-    private Vector2 distanceMaxValue;
-    private Vector2 distanceCurrentValue;
+    private bool _isTimeout = false;
+    private bool _isMenuShowed = false;
+    private Vector2 _distanceMaxValue;
+    private Vector2 _distanceCurrentValue;
 
-    private SwatMovement player;
+    private SwatMovement _player;
+    private AudioSource _audioSource;
 
-    void Awake()
+    private void Awake()
     {
         if (gc != null)
         {
@@ -72,12 +73,13 @@ public class GameController : MonoBehaviour
         gc = this;
 
         GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity);
-        player = p.GetComponent<SwatMovement>();
-        player.mainCamera = mainCamera;
+        _player = p.GetComponent<SwatMovement>();
+        _player.mainCamera = mainCamera;
         virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
-    void Start()
+    private void Start()
     {
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
         Cursor.visible = false;
@@ -94,8 +96,8 @@ public class GameController : MonoBehaviour
 #endif
         if (MainController.mc.isSoundOff)
         {
-            GetComponent<AudioSource>().volume = 0f;
-            player.GetComponent<AudioSource>().volume = 0f;
+            _audioSource.volume = 0f;
+            _player.audioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
 #else
@@ -104,8 +106,8 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            GetComponent<AudioSource>().volume = 1f;
-            player.GetComponent<AudioSource>().volume = 1f;
+            _audioSource.volume = 1f;
+            _player.audioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (On)";
 #else
@@ -113,11 +115,11 @@ public class GameController : MonoBehaviour
 #endif
         }
 
-        MazeGenerator m_MazeGenerator = new MazeGenerator();
+        MazeGenerator mMazeGenerator = new MazeGenerator();
         bool fileExist = false;
 
         // simple setting
-        m_MazeGenerator.setRatio(.75f);
+        mMazeGenerator.SetRatio(.75f);
 
         if (MainController.mc != null)
         {
@@ -164,22 +166,22 @@ public class GameController : MonoBehaviour
         }
         if (!fileExist)
         {
-            m_Maze = m_MazeGenerator.FromDimensions(mazeColumns, mazeRows, mazeInnerColumns, mazeInnerRows, mazeDropProbability);
+            _maze = mMazeGenerator.FromDimensions(mazeColumns, mazeRows, mazeInnerColumns, mazeInnerRows, mazeDropProbability);
             // make two entrances
-            m_Maze[0, 1] = 0;
-            m_Maze[2 * mazeColumns, 2 * mazeRows - 1] = 0;
+            _maze[0, 1] = 0;
+            _maze[2 * mazeColumns, 2 * mazeRows - 1] = 0;
 
             //Debug.Log(m_MazeGenerator.ConvertToString(m_Maze));
         }
 
         if (useColorMatching)
         {
-            int[,] mazeColor = new int[m_Maze.GetLength(0), m_Maze.GetLength(1)];
-            for (int i = 0; i < m_Maze.GetLength(0); i += 2)
+            int[,] mazeColor = new int[_maze.GetLength(0), _maze.GetLength(1)];
+            for (int i = 0; i < _maze.GetLength(0); i += 2)
             {
-                for (int j = 0; j < m_Maze.GetLength(1); j += 2)
+                for (int j = 0; j < _maze.GetLength(1); j += 2)
                 {
-                    if (m_Maze[i, j] == 0)
+                    if (_maze[i, j] == 0)
                     {
                         mazeColor[i, j] = -1;
                         continue;
@@ -193,14 +195,14 @@ public class GameController : MonoBehaviour
                 }
             }
 
-            for (int i = 0; i < m_Maze.GetLength(0); i += 2)
+            for (int i = 0; i < _maze.GetLength(0); i += 2)
             {
-                for (int j = 1; j < m_Maze.GetLength(1); j += 2)
+                for (int j = 1; j < _maze.GetLength(1); j += 2)
                 {
-                    if (m_Maze[i, j] == 0) continue;
+                    if (_maze[i, j] == 0) continue;
                     // i % 2 * 2 + j % 2 == 1
                     int r = Random.Range(0, edges.Length);
-                    if (j + 1 < m_Maze.GetLength(1) && mazeColor[i, j - 1] == mazeColor[i, j + 1])
+                    if (j + 1 < _maze.GetLength(1) && mazeColor[i, j - 1] == mazeColor[i, j + 1])
                         r = mazeColor[i, j - 1];
                     Instantiate(edges[r],
                                 new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
@@ -208,14 +210,14 @@ public class GameController : MonoBehaviour
                 }
             }
 
-            for (int i = 1; i < m_Maze.GetLength(0); i += 2)
+            for (int i = 1; i < _maze.GetLength(0); i += 2)
             {
-                for (int j = 0; j < m_Maze.GetLength(1); j += 2)
+                for (int j = 0; j < _maze.GetLength(1); j += 2)
                 {
-                    if (m_Maze[i, j] == 0) continue;
+                    if (_maze[i, j] == 0) continue;
                     // i % 2 * 2 + j % 2 == 2
                     int r = Random.Range(0, edges.Length);
-                    if (i + 1 < m_Maze.GetLength(0) && mazeColor[i - 1, j] == mazeColor[i + 1, j])
+                    if (i + 1 < _maze.GetLength(0) && mazeColor[i - 1, j] == mazeColor[i + 1, j])
                         r = mazeColor[i - 1, j];
                     Instantiate(edges[r],
                         new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
@@ -225,11 +227,11 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < m_Maze.GetLength(0); i++)
+            for (int i = 0; i < _maze.GetLength(0); i++)
             {
-                for (int j = 0; j < m_Maze.GetLength(1); j++)
+                for (int j = 0; j < _maze.GetLength(1); j++)
                 {
-                    if (m_Maze[i, j] == 0) continue;
+                    if (_maze[i, j] == 0) continue;
                     int type = i % 2 * 2 + j % 2;
                     switch (type)
                     {
@@ -279,43 +281,43 @@ public class GameController : MonoBehaviour
             CreateColliders(8, j);
         }
 
-        for (int i = m_Maze.GetLength(0) + 7; i > -9; i--)
+        for (int i = _maze.GetLength(0) + 7; i > -9; i--)
         {
             CreateColliders(i, -8);
-            CreateColliders(i, m_Maze.GetLength(1) + 7);
+            CreateColliders(i, _maze.GetLength(1) + 7);
         }
 
-        for (int j = m_Maze.GetLength(1) + 7; j > -9; j--)
+        for (int j = _maze.GetLength(1) + 7; j > -9; j--)
         {
             CreateColliders(-8, j);
-            CreateColliders(m_Maze.GetLength(0) + 7, j);
+            CreateColliders(_maze.GetLength(0) + 7, j);
         }
 
-        time = initialTime;
-        distanceMaxValue = new Vector2(edgeLength * (mazeRows - 1), edgeLength * (mazeColumns - 1));
-        distanceCurrentValue = new Vector2(0f, 0f);
+        _time = initialTime;
+        _distanceMaxValue = new Vector2(edgeLength * (mazeRows - 1), edgeLength * (mazeColumns - 1));
+        _distanceCurrentValue = new Vector2(0f, 0f);
         // distanceMinValue = new Vector2(0f, 0f);
 
         if (MainController.mc != null)
         {
             if (MainController.mc.isSoundOff)
             {
-                GetComponent<AudioSource>().volume = 0f;
-                player.GetComponent<AudioSource>().volume = 0f;
+                _audioSource.volume = 0f;
+                _player.audioSource.volume = 0f;
                 //soundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
                 mobileSoundButtonText.text = "Sound (Off) <color=#E69900>◆</color>";
             }
             else
             {
-                GetComponent<AudioSource>().volume = 1f;
-                player.GetComponent<AudioSource>().volume = 1f;
+                _audioSource.volume = 1f;
+                _player.audioSource.volume = 1f;
                 //soundButtonText.text = "<color=#E69900>◆</color> Sound (On)";
                 mobileSoundButtonText.text = "Sound (On) <color=#E69900>◆</color>";
             }
         }
     }
 
-    void CreateColliders(int i, int j)
+    private void CreateColliders(int i, int j)
     {
         int type = Mathf.Abs(i) % 2 * 2 + Mathf.Abs(j) % 2;
         switch (type)
@@ -342,15 +344,15 @@ public class GameController : MonoBehaviour
 
     public void SetExited()
     {
-        if (hasExited) return;
-        hasExited = true;
+        if (_hasExited) return;
+        _hasExited = true;
 
-        GetComponent<AudioSource>().Stop();
-        GetComponent<AudioSource>().clip = exitClip;
-        GetComponent<AudioSource>().loop = false;
-        GetComponent<AudioSource>().Play();
+        _audioSource.Stop();
+        _audioSource.clip = exitClip;
+        _audioSource.loop = false;
+        _audioSource.Play();
 
-        if (!isMenuShowed)
+        if (!_isMenuShowed)
         {
             MenuButton();
         }
@@ -358,11 +360,11 @@ public class GameController : MonoBehaviour
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
     public void SetShiftPressed()
     {
-        hasPressedShift = true;
+        _hasPressedShift = true;
     }
 #endif
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -370,22 +372,22 @@ public class GameController : MonoBehaviour
         }
 
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-        if (isMenuShowed && Input.GetKeyDown(KeyCode.O))
+        if (_isMenuShowed && Input.GetKeyDown(KeyCode.O))
         {
             SoundButton();
             MenuButton();
         }
-        if (isMenuShowed && Input.GetKeyDown(KeyCode.M))
+        if (_isMenuShowed && Input.GetKeyDown(KeyCode.M))
         {
             MoveButton();
             MenuButton();
         }
-        if (isMenuShowed && Input.GetKeyDown(KeyCode.N))
+        if (_isMenuShowed && Input.GetKeyDown(KeyCode.N))
         {
             NewButton();
             MenuButton();
         }
-        if (isMenuShowed && Input.GetKeyDown(KeyCode.Q))
+        if (_isMenuShowed && Input.GetKeyDown(KeyCode.Q))
         {
             QuitButton();
             MenuButton();
@@ -393,28 +395,28 @@ public class GameController : MonoBehaviour
 #endif
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        if (!hasExited)
+        if (!_hasExited)
         {
-            time -= Time.fixedDeltaTime;
-            if (!isTimeout && time <= 0f)
+            _time -= Time.fixedDeltaTime;
+            if (!_isTimeout && _time <= 0f)
             {
-                isTimeout = true;
-                GetComponent<AudioSource>().clip = timeoutClip;
-                GetComponent<AudioSource>().loop = true;
-                GetComponent<AudioSource>().Play();
+                _isTimeout = true;
+                _audioSource.clip = timeoutClip;
+                _audioSource.loop = true;
+                _audioSource.Play();
             }
         }
 
-        int sign = (int)Mathf.Sign(time);
-        int hour = Mathf.Abs((int)time / 3600);
-        int minute2 = Mathf.Abs((int)time % 3600 / 600);
-        int minute1 = Mathf.Abs((int)time / 60 % 10);
-        int second2 = Mathf.Abs((int)time % 60 / 10);
-        int second1 = Mathf.Abs((int)time % 10);
-        int secondDot1 = Mathf.Abs((int)(time * 10) % 10);
-        int secondDot2 = Mathf.Abs((int)(time * 100) % 10);
+        int sign = (int)Mathf.Sign(_time);
+        int hour = Mathf.Abs((int)_time / 3600);
+        int minute2 = Mathf.Abs((int)_time % 3600 / 600);
+        int minute1 = Mathf.Abs((int)_time / 60 % 10);
+        int second2 = Mathf.Abs((int)_time % 60 / 10);
+        int second1 = Mathf.Abs((int)_time % 10);
+        int secondDot1 = Mathf.Abs((int)(_time * 10) % 10);
+        int secondDot2 = Mathf.Abs((int)(_time * 100) % 10);
 
         if (sign <= 0)
         {
@@ -422,7 +424,7 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            if (hasExited) timeText.text = "<color=#00FF57>";
+            if (_hasExited) timeText.text = "<color=#00FF57>";
             else timeText.text = "";
         }
 
@@ -433,19 +435,19 @@ public class GameController : MonoBehaviour
         else
             timeText.text += minute1 + ":" + second2 + "" + second1 + "." + secondDot1 + "" + secondDot2 + "\n";
 
-        if (sign <= 0 || hasExited)
+        if (sign <= 0 || _hasExited)
             timeText.text += "</color>";
 
-        if (time <= 0f)
+        if (_time <= 0f)
         {
             timeText.text += "Time out!";
         }
-        else if (hasExited)
+        else if (_hasExited)
         {
             timeText.text += "Congraturations!";
         }
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-        else if (!hasPressedShift)
+        else if (!_hasPressedShift)
         {
             timeText.text += "Press 'Left Shift' or 'Right Click' to dash.";
         }
@@ -466,18 +468,18 @@ public class GameController : MonoBehaviour
             }
         }
 
-        distanceCurrentValue = new Vector2(
-            player.GetComponent<Transform>().position.x / distanceMaxValue.x,
-            player.GetComponent<Transform>().position.z / distanceMaxValue.y
+        _distanceCurrentValue = new Vector2(
+            _player.GetComponent<Transform>().position.x / _distanceMaxValue.x,
+            _player.GetComponent<Transform>().position.z / _distanceMaxValue.y
         );
-        progressSlider.SetValues(distanceCurrentValue);
+        progressSlider.SetValues(_distanceCurrentValue);
     }
 
     public void MenuButton()
     {
-        if (isMenuShowed)
+        if (_isMenuShowed)
         {
-            isMenuShowed = false;
+            _isMenuShowed = false;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(false);
             pcMenuButton.GetComponent<RectTransform>().anchorMax = new Vector2(0.11f, 0.98f);
@@ -490,7 +492,7 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            isMenuShowed = true;
+            _isMenuShowed = true;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(true);
             pcMenuButton.GetComponent<RectTransform>().anchorMax = new Vector2(0.15f, 0.98f);
@@ -508,8 +510,8 @@ public class GameController : MonoBehaviour
         if (!MainController.mc.isSoundOff)
         {
             MainController.mc.isSoundOff = true;
-            GetComponent<AudioSource>().volume = 0f;
-            player.GetComponent<AudioSource>().volume = 0f;
+            _audioSource.volume = 0f;
+            _player.audioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
 #else
@@ -519,8 +521,8 @@ public class GameController : MonoBehaviour
         else
         {
             MainController.mc.isSoundOff = false;
-            GetComponent<AudioSource>().volume = 1f;
-            player.GetComponent<AudioSource>().volume = 1f;
+            _audioSource.volume = 1f;
+            _player.audioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (On)";
 #else
@@ -531,7 +533,7 @@ public class GameController : MonoBehaviour
 
     public void MoveButton()
     {
-        player.GetComponent<Transform>().position = initialPlayerPosition;
+        _player.transform.position = initialPlayerPosition;
     }
 
     public void NewButton()

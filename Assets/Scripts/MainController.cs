@@ -54,7 +54,7 @@ public class MainController : MonoBehaviour
     public Theme theme = Theme.None;
     public Level level = Level.None;
 
-    private bool hasGameStart = false;
+    private bool _hasGameStart = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -121,7 +121,7 @@ public class MainController : MonoBehaviour
 
     public void SunsetTheme()
     {
-        if (hasGameStart) return;
+        if (_hasGameStart) return;
         theme = Theme.Sunset;
         SceneIndex = (int)theme;    // 1
         UpdateStart();
@@ -130,7 +130,7 @@ public class MainController : MonoBehaviour
 
     public void DesertTheme()
     {
-        if (hasGameStart) return;
+        if (_hasGameStart) return;
         theme = Theme.Desert;
         SceneIndex = (int)theme;    // 2
         UpdateStart();
@@ -139,7 +139,7 @@ public class MainController : MonoBehaviour
 
     public void IllusionTheme()
     {
-        if (hasGameStart) return;
+        if (_hasGameStart) return;
         theme = Theme.Illusion;
         SceneIndex = (int)theme;    // 3
         UpdateStart();
@@ -148,7 +148,7 @@ public class MainController : MonoBehaviour
 
     public void EasyLevel()
     {
-        if (hasGameStart) return;
+        if (_hasGameStart) return;
         level = Level.Easy;
         MazeColumns = 12;
         MazeRows = 12;
@@ -159,7 +159,7 @@ public class MainController : MonoBehaviour
 
     public void NormalLevel()
     {
-        if (hasGameStart) return;
+        if (_hasGameStart) return;
         level = Level.Normal;
         MazeColumns = 18;
         MazeRows = 18;
@@ -170,7 +170,7 @@ public class MainController : MonoBehaviour
 
     public void HardLevel()
     {
-        if (hasGameStart) return;
+        if (_hasGameStart) return;
         level = Level.Hard;
         MazeColumns = 24;
         MazeRows = 24;
@@ -181,7 +181,7 @@ public class MainController : MonoBehaviour
 
     private void UpdateStart()
     {
-        if (hasGameStart || theme == Theme.None || level == Level.None)
+        if (_hasGameStart || theme == Theme.None || level == Level.None)
             startButton.interactable = false;
         else
             startButton.interactable = true;
@@ -242,8 +242,8 @@ public class MainController : MonoBehaviour
 
     public void StartGame()
     {
-        if (hasGameStart || theme == Theme.None || level == Level.None) return;
-        hasGameStart = true;
+        if (_hasGameStart || theme == Theme.None || level == Level.None) return;
+        _hasGameStart = true;
         SceneManager.LoadScene(SceneIndex);
         UpdateStart();
     }

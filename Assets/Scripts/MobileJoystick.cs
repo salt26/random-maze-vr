@@ -23,8 +23,8 @@ public class MobileJoystick : MonoBehaviour
     // How far the joystick should be placed from the bottom of the screen
     int marginBottom = (int)(Screen.height * 0.22f);
 
-    float MIN_THRESHOLD = Screen.height * 0.2f * 0.2f;
-    float MAX_THRESHOLD = Screen.height * 0.2f;
+    float minThreshold = Screen.height * 0.2f * 0.2f;
+    float maxThreshold = Screen.height * 0.2f;
 
     Canvas mainCanvas;
 
