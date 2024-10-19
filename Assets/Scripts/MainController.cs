@@ -58,6 +58,7 @@ public class MainController : MonoBehaviour
     public Level level = Level.None;
 
     private bool _hasGameStart = false;
+    private bool _isBgmFading;
     private AudioSource bgmAudioSource;
     private TMP_Text bgmText;
     private TMP_Text themeSunsetText;
@@ -66,6 +67,7 @@ public class MainController : MonoBehaviour
     private TMP_Text levelEasyText;
     private TMP_Text levelNormalText;
     private TMP_Text levelHardText;
+    private const int FadingFrames = 15;
 
     // Start is called before the first frame update
     void Awake()
@@ -76,6 +78,7 @@ public class MainController : MonoBehaviour
             isSoundOff = mc.isSoundOff;
             Destroy(mc.gameObject);
         }
+        _isBgmFading = false;
         mc = this;
         DontDestroyOnLoad(this);
     }
@@ -98,13 +101,14 @@ public class MainController : MonoBehaviour
         if (isBGMOff)
         {
             bgmAudioSource.volume = 0f;
+            bgmAudioSource.Stop();
             bgmText.text = "    BGM (Off)"; // TODO: `.text = ` 모두 찾아서 Cysharp.ZString으로 바꾸기
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f,
                 normalColor = ColorUtil.DarkWhite,
-                disabledColor = ColorUtil.DarkWhite,
+                disabledColor = ColorUtil.DarkWhiteTransparent,
                 highlightedColor = ColorUtil.Blue,
                 selectedColor = ColorUtil.Blue,
                 pressedColor = ColorUtil.BrightBlue
@@ -114,13 +118,14 @@ public class MainController : MonoBehaviour
         else
         {
             bgmAudioSource.volume = 1f;
+            bgmAudioSource.Play();
             bgmText.text = "    BGM (On)";
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f,
                 normalColor = ColorUtil.DarkWhite,
-                disabledColor = ColorUtil.DarkWhite,
+                disabledColor = ColorUtil.DarkWhiteTransparent,
                 highlightedColor = ColorUtil.Green,
                 selectedColor = ColorUtil.Green,
                 pressedColor = ColorUtil.BrightGreen
@@ -278,42 +283,82 @@ public class MainController : MonoBehaviour
 
     public void BGMButton()
     {
+        Debug.Log(_isBgmFading);
+        if (_isBgmFading) return;
         if (!isBGMOff)
         {
-            isBGMOff = true;
-            bgmAudioSource.volume = 0f;
-            bgmText.text = "    BGM (Off)";
-            bgmButton.colors = new ColorBlock
-            {
-                colorMultiplier = 1f,
-                fadeDuration = 0.1f,
-                normalColor = ColorUtil.DarkWhite,
-                disabledColor = ColorUtil.DarkWhite,
-                highlightedColor = ColorUtil.Blue,
-                selectedColor = ColorUtil.Blue,
-                pressedColor = ColorUtil.BrightBlue
-            };
+            StartCoroutine(BgmFadeOut());
         }
         else
         {
-            isBGMOff = false;
-            bgmAudioSource.volume = 1f;
-            bgmText.text = "    BGM (On)";
-            bgmButton.colors = new ColorBlock
-            {
-                colorMultiplier = 1f,
-                fadeDuration = 0.1f,
-                normalColor = ColorUtil.DarkWhite,
-                disabledColor = ColorUtil.DarkWhite,
-                highlightedColor = ColorUtil.Green,
-                selectedColor = ColorUtil.Green,
-                pressedColor = ColorUtil.BrightGreen
-            };
+            StartCoroutine(BgmFadeIn());
         }
     }
 
     public void GitHubButton(string username)
     {
         Application.OpenURL($"https://github.com/{username}");
+    }
+
+    private IEnumerator BgmFadeOut()
+    {
+        if (_isBgmFading || isBGMOff) yield break;
+        
+        _isBgmFading = true;
+        bgmButton.interactable = false;
+        bgmText.text = "    BGM (Off)";
+        bgmButton.colors = new ColorBlock
+        {
+            colorMultiplier = 1f,
+            fadeDuration = 0.1f,
+            normalColor = ColorUtil.DarkWhite,
+            disabledColor = ColorUtil.DarkWhiteTransparent,
+            highlightedColor = ColorUtil.Blue,
+            selectedColor = ColorUtil.Blue,
+            pressedColor = ColorUtil.BrightBlue
+        };
+        float volume = bgmAudioSource.volume;
+        for (int i = 0; i < FadingFrames; i++)
+        {
+            bgmAudioSource.volume = Mathf.Lerp(volume, 0f, i / (float)FadingFrames);
+            yield return new WaitForSecondsRealtime(0.02f);
+        }
+        
+        isBGMOff = true;
+        bgmAudioSource.volume = 0f;
+        bgmAudioSource.Pause();
+        bgmButton.interactable = true;
+        _isBgmFading = false;
+    }
+
+    private IEnumerator BgmFadeIn()
+    {
+        if (_isBgmFading || !isBGMOff) yield break;
+        
+        _isBgmFading = true;
+        bgmButton.interactable = false;
+        bgmText.text = "    BGM (On)";
+        bgmButton.colors = new ColorBlock
+        {
+            colorMultiplier = 1f,
+            fadeDuration = 0.1f,
+            normalColor = ColorUtil.DarkWhite,
+            disabledColor = ColorUtil.DarkWhiteTransparent,
+            highlightedColor = ColorUtil.Green,
+            selectedColor = ColorUtil.Green,
+            pressedColor = ColorUtil.BrightGreen
+        };
+        float volume = bgmAudioSource.volume;
+        bgmAudioSource.Play();
+        for (int i = 0; i < FadingFrames; i++)
+        {
+            bgmAudioSource.volume = Mathf.Lerp(volume, 1f, i / (float)FadingFrames);
+            yield return new WaitForSecondsRealtime(0.02f);
+        }
+        
+        isBGMOff = false;
+        bgmAudioSource.volume = 1f;
+        bgmButton.interactable = true;
+        _isBgmFading = false;
     }
 }
