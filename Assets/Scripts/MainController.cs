@@ -59,14 +59,14 @@ public class MainController : MonoBehaviour
 
     private bool _hasGameStart = false;
     private bool _isBgmFading;
-    private AudioSource bgmAudioSource;
-    private TMP_Text bgmText;
-    private TMP_Text themeSunsetText;
-    private TMP_Text themeDesertText;
-    private TMP_Text themeIllusionText;
-    private TMP_Text levelEasyText;
-    private TMP_Text levelNormalText;
-    private TMP_Text levelHardText;
+    private AudioSource _bgmAudioSource;
+    private TMP_Text _bgmText;
+    private TMP_Text _themeSunsetText;
+    private TMP_Text _themeDesertText;
+    private TMP_Text _themeIllusionText;
+    private TMP_Text _levelEasyText;
+    private TMP_Text _levelNormalText;
+    private TMP_Text _levelHardText;
     private const int FadingFrames = 15;
 
     // Start is called before the first frame update
@@ -87,22 +87,22 @@ public class MainController : MonoBehaviour
     {
         theme = Theme.None;
         level = Level.None;
-        bgmAudioSource = bgm.GetComponent<AudioSource>();
-        bgmText = bgm.GetComponent<TMP_Text>();
-        themeSunsetText = themeSunsetButton.GetComponentInChildren<TMP_Text>();
-        themeDesertText = themeDesertButton.GetComponentInChildren<TMP_Text>();
-        themeIllusionText = themeIllusionButton.GetComponentInChildren<TMP_Text>();
-        levelEasyText = levelEasyButton.GetComponentInChildren<TMP_Text>();
-        levelNormalText = levelNormalButton.GetComponentInChildren<TMP_Text>();
-        levelHardText = levelHardButton.GetComponentInChildren<TMP_Text>();
+        _bgmAudioSource = bgm.GetComponent<AudioSource>();
+        _bgmText = bgm.GetComponent<TMP_Text>();
+        _themeSunsetText = themeSunsetButton.GetComponentInChildren<TMP_Text>();
+        _themeDesertText = themeDesertButton.GetComponentInChildren<TMP_Text>();
+        _themeIllusionText = themeIllusionButton.GetComponentInChildren<TMP_Text>();
+        _levelEasyText = levelEasyButton.GetComponentInChildren<TMP_Text>();
+        _levelNormalText = levelNormalButton.GetComponentInChildren<TMP_Text>();
+        _levelHardText = levelHardButton.GetComponentInChildren<TMP_Text>();
         UpdateLevel();
         UpdateStart();
 
         if (isBGMOff)
         {
-            bgmAudioSource.volume = 0f;
-            bgmAudioSource.Stop();
-            bgmText.text = "    BGM (Off)"; // TODO: `.text = ` 모두 찾아서 Cysharp.ZString으로 바꾸기
+            _bgmAudioSource.volume = 0f;
+            _bgmAudioSource.Stop();
+            _bgmText.text = "    BGM (Off)"; // TODO: `.text = ` 모두 찾아서 Cysharp.ZString으로 바꾸기
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
@@ -117,9 +117,9 @@ public class MainController : MonoBehaviour
         }
         else
         {
-            bgmAudioSource.volume = 1f;
-            bgmAudioSource.Play();
-            bgmText.text = "    BGM (On)";
+            _bgmAudioSource.volume = 1f;
+            _bgmAudioSource.Play();
+            _bgmText.text = "    BGM (On)";
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
@@ -213,23 +213,23 @@ public class MainController : MonoBehaviour
 
     private void UpdateTheme()
     {
-        themeSunsetText.color = ColorUtil.DarkWhite;
-        themeDesertText.color = ColorUtil.DarkWhite;
-        themeIllusionText.color = ColorUtil.DarkWhite;
+        _themeSunsetText.color = ColorUtil.DarkWhite;
+        _themeDesertText.color = ColorUtil.DarkWhite;
+        _themeIllusionText.color = ColorUtil.DarkWhite;
         backgroundImage.color = Color.white;
 
         switch (theme)
         {
             case Theme.Sunset:
-                themeSunsetText.color = themeSunsetButton.colors.highlightedColor;
+                _themeSunsetText.color = themeSunsetButton.colors.highlightedColor;
                 backgroundImage.sprite = sunsetSprite;
                 break;
             case Theme.Desert:
-                themeDesertText.color = themeDesertButton.colors.highlightedColor;
+                _themeDesertText.color = themeDesertButton.colors.highlightedColor;
                 backgroundImage.sprite = desertSprite;
                 break;
             case Theme.Illusion:
-                themeIllusionText.color = themeIllusionButton.colors.highlightedColor;
+                _themeIllusionText.color = themeIllusionButton.colors.highlightedColor;
                 backgroundImage.color = ColorUtil.DarkWhite;
                 backgroundImage.sprite = illusionSprite;
                 break;
@@ -238,9 +238,9 @@ public class MainController : MonoBehaviour
 
     private void UpdateLevel()
     {
-        levelEasyText.color = ColorUtil.DarkWhite;
-        levelNormalText.color = ColorUtil.DarkWhite;
-        levelHardText.color = ColorUtil.DarkWhite;
+        _levelEasyText.color = ColorUtil.DarkWhite;
+        _levelNormalText.color = ColorUtil.DarkWhite;
+        _levelHardText.color = ColorUtil.DarkWhite;
         sizeText.text = MazeColumns + " X " + MazeRows; // TODO
 
         switch (level)
@@ -250,15 +250,15 @@ public class MainController : MonoBehaviour
                 sizeText.text = string.Empty;
                 break;
             case Level.Easy:
-                levelEasyText.color = levelEasyButton.colors.highlightedColor;
+                _levelEasyText.color = levelEasyButton.colors.highlightedColor;
                 sizeText.color = levelEasyButton.colors.pressedColor;
                 break;
             case Level.Normal:
-                levelNormalText.color = levelNormalButton.colors.highlightedColor;
+                _levelNormalText.color = levelNormalButton.colors.highlightedColor;
                 sizeText.color = levelNormalButton.colors.pressedColor;
                 break;
             case Level.Hard:
-                levelHardText.color = levelHardButton.colors.highlightedColor;
+                _levelHardText.color = levelHardButton.colors.highlightedColor;
                 sizeText.color = levelHardButton.colors.pressedColor;
                 break;
         }
@@ -283,7 +283,6 @@ public class MainController : MonoBehaviour
 
     public void BGMButton()
     {
-        Debug.Log(_isBgmFading);
         if (_isBgmFading) return;
         if (!isBGMOff)
         {
@@ -306,7 +305,7 @@ public class MainController : MonoBehaviour
         
         _isBgmFading = true;
         bgmButton.interactable = false;
-        bgmText.text = "    BGM (Off)";
+        _bgmText.text = "    BGM (Off)";
         bgmButton.colors = new ColorBlock
         {
             colorMultiplier = 1f,
@@ -317,16 +316,16 @@ public class MainController : MonoBehaviour
             selectedColor = ColorUtil.Blue,
             pressedColor = ColorUtil.BrightBlue
         };
-        float volume = bgmAudioSource.volume;
+        float volume = _bgmAudioSource.volume;
         for (int i = 0; i < FadingFrames; i++)
         {
-            bgmAudioSource.volume = Mathf.Lerp(volume, 0f, i / (float)FadingFrames);
+            _bgmAudioSource.volume = Mathf.Lerp(volume, 0f, i / (float)FadingFrames);
             yield return new WaitForSecondsRealtime(0.02f);
         }
         
         isBGMOff = true;
-        bgmAudioSource.volume = 0f;
-        bgmAudioSource.Pause();
+        _bgmAudioSource.volume = 0f;
+        _bgmAudioSource.Pause();
         bgmButton.interactable = true;
         _isBgmFading = false;
     }
@@ -337,7 +336,7 @@ public class MainController : MonoBehaviour
         
         _isBgmFading = true;
         bgmButton.interactable = false;
-        bgmText.text = "    BGM (On)";
+        _bgmText.text = "    BGM (On)";
         bgmButton.colors = new ColorBlock
         {
             colorMultiplier = 1f,
@@ -348,16 +347,16 @@ public class MainController : MonoBehaviour
             selectedColor = ColorUtil.Green,
             pressedColor = ColorUtil.BrightGreen
         };
-        float volume = bgmAudioSource.volume;
-        bgmAudioSource.Play();
+        float volume = _bgmAudioSource.volume;
+        _bgmAudioSource.Play();
         for (int i = 0; i < FadingFrames; i++)
         {
-            bgmAudioSource.volume = Mathf.Lerp(volume, 1f, i / (float)FadingFrames);
+            _bgmAudioSource.volume = Mathf.Lerp(volume, 1f, i / (float)FadingFrames);
             yield return new WaitForSecondsRealtime(0.02f);
         }
         
         isBGMOff = false;
-        bgmAudioSource.volume = 1f;
+        _bgmAudioSource.volume = 1f;
         bgmButton.interactable = true;
         _isBgmFading = false;
     }

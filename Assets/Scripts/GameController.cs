@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Text;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Cinemachine;
@@ -64,7 +65,10 @@ public class GameController : MonoBehaviour
 
     private SwatMovement _player;
     private AudioSource _audioSource;
-    private RectTransform _pcMenuButtonRectTransform;
+    private static readonly int State = Animator.StringToHash("AnimationState");
+    private static readonly int IsSprinting = Animator.StringToHash("IsSprinting");
+    private static readonly int NeedTurnLeft = Animator.StringToHash("NeedTurnLeft");
+    private static readonly int NeedTurnRight = Animator.StringToHash("NeedTurnRight");
 
     private void Awake()
     {
@@ -91,7 +95,6 @@ public class GameController : MonoBehaviour
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 250f;
         mobileMenuUI.SetActive(false);
         pcMenuUI.SetActive(true);
-        _pcMenuButtonRectTransform = pcMenuButton.GetComponent<RectTransform>();
 #else
         touchInput.SetActive(true);
         mobileMenuUI.SetActive(true);
@@ -102,9 +105,9 @@ public class GameController : MonoBehaviour
             _audioSource.volume = 0f;
             _player.audioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
+            pcSoundButtonText.text = "Sound (Off)";
 #else
-            mobileSoundButtonText.text = "Sound (Off) <color=#E69900>◆</color>";
+            mobileSoundButtonText.text = "Sound (Off)";
 #endif
         }
         else
@@ -112,9 +115,9 @@ public class GameController : MonoBehaviour
             _audioSource.volume = 1f;
             _player.audioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (On)";
+            pcSoundButtonText.text = "Sound (On)";
 #else
-            mobileSoundButtonText.text = "Sound (On) <color=#E69900>◆</color>";
+            mobileSoundButtonText.text = "Sound (On)";
 #endif
         }
 
@@ -270,10 +273,10 @@ public class GameController : MonoBehaviour
             Quaternion.Euler(0, 216f, 0));
         p.GetComponent<SwatMovement>().enabled = false;
         Animator pAnimator = p.GetComponent<Animator>();
-        pAnimator.SetInteger("AnimationState", 4);
-        pAnimator.SetBool("IsSprinting", false);
-        pAnimator.SetBool("NeedTurnLeft", false);
-        pAnimator.SetBool("NeedTurnRight", false);
+        pAnimator.SetInteger(State, 4);
+        pAnimator.SetBool(IsSprinting, false);
+        pAnimator.SetBool(NeedTurnLeft, false);
+        pAnimator.SetBool(NeedTurnRight, false);
 
         for (int i = -1; i > -9; i--)
         {
@@ -308,15 +311,13 @@ public class GameController : MonoBehaviour
             {
                 _audioSource.volume = 0f;
                 _player.audioSource.volume = 0f;
-                //soundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
-                mobileSoundButtonText.text = "Sound (Off) <color=#E69900>◆</color>";    // TODO
+                mobileSoundButtonText.text = "Sound (Off)";    // TODO
             }
             else
             {
                 _audioSource.volume = 1f;
                 _player.audioSource.volume = 1f;
-                //soundButtonText.text = "<color=#E69900>◆</color> Sound (On)";
-                mobileSoundButtonText.text = "Sound (On) <color=#E69900>◆</color>";
+                mobileSoundButtonText.text = "Sound (On)";
             }
         }
     }
@@ -379,7 +380,7 @@ public class GameController : MonoBehaviour
         if (_isMenuShowed && Input.GetKeyDown(KeyCode.O))
         {
             SoundButton();
-            MenuButton();
+            //MenuButton();
         }
         if (_isMenuShowed && Input.GetKeyDown(KeyCode.M))
         {
@@ -424,55 +425,59 @@ public class GameController : MonoBehaviour
         int secondDot1 = Mathf.Abs((int)(_time * 10) % 10);
         int secondDot2 = Mathf.Abs((int)(_time * 100) % 10);
 
+        StringBuilder sb = new StringBuilder();
+
         if (sign <= 0)
         {
-            timeText.text = "<color=#FF1100>-";
+            sb.Append("<color=#FF1100>-");
         }
         else
         {
-            if (_hasExited) timeText.text = "<color=#00FF57>";
-            else timeText.text = "";
+            if (_hasExited) sb.Append("<color=#00FF57>");
+            else sb.Clear();
         }
 
         if (hour > 0)
-            timeText.text += hour + ":" + minute2 + "" + minute1 + ":" + second2 + "" + second1 + "." + secondDot1 + "" + secondDot2 + "\n";
+            sb.AppendFormat("{0}:{1}{2}:{3}{4}.{5}{6}\n", hour, minute2, minute1, second2, second1, secondDot1, secondDot2);
         else if (minute2 > 0)
-            timeText.text += minute2 + "" + minute1 + ":" + second2 + "" + second1 + "." + secondDot1 + "" + secondDot2 + "\n";
+            sb.AppendFormat("{0}{1}:{2}{3}.{4}{5}\n", minute2, minute1, second2, second1, secondDot1, secondDot2);
         else
-            timeText.text += minute1 + ":" + second2 + "" + second1 + "." + secondDot1 + "" + secondDot2 + "\n";
+            sb.AppendFormat("{0}:{1}{2}.{3}{4}\n", minute1, second2, second1, secondDot1, secondDot2);
 
         if (sign <= 0 || _hasExited)
-            timeText.text += "</color>";
+            sb.Append("</color>");
 
         if (_time <= 0f)
         {
-            timeText.text += "Time out!";
+            sb.Append("Time out!");
         }
         else if (_hasExited)
         {
-            timeText.text += "Congratulations!";
+            sb.Append("Congratulations!");
         }
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
         else if (!_hasPressedShift)
         {
-            timeText.text += "Press 'Left Shift' or 'Right Click' to dash.";
+            sb.Append("Press 'Left Shift' or 'Right Click' to dash.");
         }
 #endif
         else
         {
             if (mazeColumns == 12 && mazeRows == 12)
             {
-                timeText.text += "Level: Easy";
+                sb.Append("Level: Easy");
             }
             else if (mazeColumns == 18 && mazeRows == 18)
             {
-                timeText.text += "Level: Normal";
+                sb.Append("Level: Normal");
             }
             else if (mazeColumns == 24 && mazeRows == 24)
             {
-                timeText.text += "Level: Hard";
+                sb.Append("Level: Hard");
             }
         }
+
+        timeText.text = sb.ToString();
 
         Vector3 position = _player.transform.position;
         _distanceCurrentValue = new Vector2(
@@ -489,12 +494,11 @@ public class GameController : MonoBehaviour
             _isMenuShowed = false;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(false);
-            _pcMenuButtonRectTransform.anchorMax = new Vector2(0.11f, 0.98f);
-            pcMenuButtonText.text = "<color=#E6C700>◆</color> Menu";    // TODO
+            pcMenuButtonText.text = "Menu";    // TODO
             Cursor.visible = false;
 #else
             mobileMenu.SetActive(false);
-            mobileMenuButtonText.text = "Menu <color=#E6C700>◆</color>";
+            mobileMenuButtonText.text = "Menu";
 #endif
         }
         else
@@ -502,12 +506,11 @@ public class GameController : MonoBehaviour
             _isMenuShowed = true;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(true);
-            _pcMenuButtonRectTransform.anchorMax = new Vector2(0.15f, 0.98f);
-            pcMenuButtonText.text = "<color=#E6C700>◆</color> Hide Menu";
+            pcMenuButtonText.text = "Hide Menu";
             Cursor.visible = false;
 #else
             mobileMenu.SetActive(true);
-            mobileMenuButtonText.text = "Hide Menu <color=#E6C700>◆</color>";
+            mobileMenuButtonText.text = "Hide Menu";
 #endif
         }
     }
@@ -520,9 +523,9 @@ public class GameController : MonoBehaviour
             _audioSource.volume = 0f;
             _player.audioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
+            pcSoundButtonText.text = "Sound (Off)";
 #else
-            mobileSoundButtonText.text = "Sound (Off) <color=#E69900>◆</color>";
+            mobileSoundButtonText.text = "Sound (Off)";
 #endif
         }
         else
@@ -531,9 +534,9 @@ public class GameController : MonoBehaviour
             _audioSource.volume = 1f;
             _player.audioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "<color=#E69900>◆</color> Sound (On)";
+            pcSoundButtonText.text = "Sound (On)";
 #else
-            mobileSoundButtonText.text = "Sound (On) <color=#E69900>◆</color>";
+            mobileSoundButtonText.text = "Sound (On)";
 #endif
         }
     }
