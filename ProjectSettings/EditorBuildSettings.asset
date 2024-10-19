@@ -18,5 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Illusion.unity
     guid: 02bb88c8da4c0ba49a929e9c7332bd92
   m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d2fc080aaa063b64bbc86526d8acb36b,
+      type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 783c5140590553b4a90736a82281b155,
       type: 2}

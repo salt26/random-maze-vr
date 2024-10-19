@@ -20,6 +20,11 @@ public class SwatMovement : MonoBehaviour
     Vector3 _movement;
     Rigidbody _rigidbody;
     float _footstepTiming = 0f;
+    private Transform virtualCameraTransform;
+    private static readonly int State = Animator.StringToHash("AnimationState");
+    private static readonly int IsSprinting = Animator.StringToHash("IsSprinting");
+    private static readonly int NeedTurnLeft = Animator.StringToHash("NeedTurnLeft");
+    private static readonly int NeedTurnRight = Animator.StringToHash("NeedTurnRight");
 
     //Transform lookAt;
     //Transform follow;
@@ -35,6 +40,11 @@ public class SwatMovement : MonoBehaviour
     }
 
 #if (UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1)
+    private void Start()
+    {
+        virtualCameraTransform = GameController.gc.virtualCamera.GetComponent<Transform>();
+    }
+
     private void Update()
     {
         _vertical = MobileJoystick.instance.moveDirection.y;
@@ -76,9 +86,8 @@ public class SwatMovement : MonoBehaviour
         else
             MobileButton.instance.SetCircleColor(new Color(1f, 1f, 1f));
 
-        GameController.gc.virtualCamera.GetComponent<Transform>().Rotate(
-            new Vector3(0f, 1f, 0f) * 2.2f
-            * Mathf.Pow(MobileJoystick.instance.moveDirection.x, 2) * Mathf.Sign(MobileJoystick.instance.moveDirection.x));
+        virtualCameraTransform.Rotate(
+            new Vector3(0f, 2.2f * Mathf.Pow(MobileJoystick.instance.moveDirection.x, 2) * Mathf.Sign(MobileJoystick.instance.moveDirection.x), 0f));
 #endif
 
         Vector3 eulerAngles = mainCamera.transform.eulerAngles;
@@ -105,10 +114,10 @@ public class SwatMovement : MonoBehaviour
             GameController.gc.footsteps.RemoveAt(index);
         }
 
-        _animator.SetInteger("AnimationState", _animationState);
-        _animator.SetBool("IsSprinting", isSprinting);
-        _animator.SetBool("NeedTurnLeft", needTurnLeft);
-        _animator.SetBool("NeedTurnRight", needTurnRight);
+        _animator.SetInteger(State, _animationState);
+        _animator.SetBool(IsSprinting, isSprinting);
+        _animator.SetBool(NeedTurnLeft, needTurnLeft);
+        _animator.SetBool(NeedTurnRight, needTurnRight);
     }
 
     private void OnAnimatorMove()

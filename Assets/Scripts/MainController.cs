@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -46,7 +49,7 @@ public class MainController : MonoBehaviour
     public Button levelEasyButton;
     public Button levelNormalButton;
     public Button levelHardButton;
-    public Text sizeText;
+    public TMP_Text sizeText;
     public Image backgroundImage;
     public Sprite sunsetSprite;
     public Sprite desertSprite;
@@ -55,6 +58,14 @@ public class MainController : MonoBehaviour
     public Level level = Level.None;
 
     private bool _hasGameStart = false;
+    private AudioSource bgmAudioSource;
+    private TMP_Text bgmText;
+    private TMP_Text themeSunsetText;
+    private TMP_Text themeDesertText;
+    private TMP_Text themeIllusionText;
+    private TMP_Text levelEasyText;
+    private TMP_Text levelNormalText;
+    private TMP_Text levelHardText;
 
     // Start is called before the first frame update
     void Awake()
@@ -73,38 +84,46 @@ public class MainController : MonoBehaviour
     {
         theme = Theme.None;
         level = Level.None;
+        bgmAudioSource = bgm.GetComponent<AudioSource>();
+        bgmText = bgm.GetComponent<TMP_Text>();
+        themeSunsetText = themeSunsetButton.GetComponentInChildren<TMP_Text>();
+        themeDesertText = themeDesertButton.GetComponentInChildren<TMP_Text>();
+        themeIllusionText = themeIllusionButton.GetComponentInChildren<TMP_Text>();
+        levelEasyText = levelEasyButton.GetComponentInChildren<TMP_Text>();
+        levelNormalText = levelNormalButton.GetComponentInChildren<TMP_Text>();
+        levelHardText = levelHardButton.GetComponentInChildren<TMP_Text>();
         UpdateLevel();
         UpdateStart();
 
         if (isBGMOff)
         {
-            bgm.GetComponent<AudioSource>().volume = 0f;
-            bgm.GetComponent<Text>().text = "<color=#0098E6>◆</color> BGM (Off)";
+            bgmAudioSource.volume = 0f;
+            bgmText.text = "    BGM (Off)"; // TODO: `.text = ` 모두 찾아서 Cysharp.ZString으로 바꾸기
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f,
-                normalColor = new Color(0.9f, 0.9f, 0.9f),
-                disabledColor = new Color(0.9f, 0.9f, 0.9f),
-                highlightedColor = new Color(0f, 0.5929411f, 0.9f),
-                selectedColor = new Color(0f, 0.5929411f, 0.9f),
-                pressedColor = new Color(0f, 0.6588235f, 1f)
+                normalColor = ColorUtil.DarkWhite,
+                disabledColor = ColorUtil.DarkWhite,
+                highlightedColor = ColorUtil.Blue,
+                selectedColor = ColorUtil.Blue,
+                pressedColor = ColorUtil.BrightBlue
             };
 
         }
         else
         {
-            bgm.GetComponent<AudioSource>().volume = 1f;
-            bgm.GetComponent<Text>().text = "<color=#00E64E>◆</color> BGM (On)";
+            bgmAudioSource.volume = 1f;
+            bgmText.text = "    BGM (On)";
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f,
-                normalColor = new Color(0.9f, 0.9f, 0.9f),
-                disabledColor = new Color(0.9f, 0.9f, 0.9f),
-                highlightedColor = new Color(0f, 0.9f, 0.3070588f),
-                selectedColor = new Color(0f, 0.9f, 0.3070588f),
-                pressedColor = new Color(0f, 1f, 0.3411765f)
+                normalColor = ColorUtil.DarkWhite,
+                disabledColor = ColorUtil.DarkWhite,
+                highlightedColor = ColorUtil.Green,
+                selectedColor = ColorUtil.Green,
+                pressedColor = ColorUtil.BrightGreen
             };
         }
     }
@@ -112,7 +131,7 @@ public class MainController : MonoBehaviour
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name.Equals("Main") && !Cursor.visible)
+        if (SceneManager.GetActiveScene().buildIndex == 0 && !Cursor.visible)   // Main scene
         {
             Cursor.visible = true;
         }
@@ -189,24 +208,24 @@ public class MainController : MonoBehaviour
 
     private void UpdateTheme()
     {
-        themeSunsetButton.GetComponentInChildren<Text>().color = new Color(0.9f, 0.9f, 0.9f);
-        themeDesertButton.GetComponentInChildren<Text>().color = new Color(0.9f, 0.9f, 0.9f);
-        themeIllusionButton.GetComponentInChildren<Text>().color = new Color(0.9f, 0.9f, 0.9f);
+        themeSunsetText.color = ColorUtil.DarkWhite;
+        themeDesertText.color = ColorUtil.DarkWhite;
+        themeIllusionText.color = ColorUtil.DarkWhite;
         backgroundImage.color = Color.white;
 
         switch (theme)
         {
             case Theme.Sunset:
-                themeSunsetButton.GetComponentInChildren<Text>().color = themeSunsetButton.colors.highlightedColor;
+                themeSunsetText.color = themeSunsetButton.colors.highlightedColor;
                 backgroundImage.sprite = sunsetSprite;
                 break;
             case Theme.Desert:
-                themeDesertButton.GetComponentInChildren<Text>().color = themeDesertButton.colors.highlightedColor;
+                themeDesertText.color = themeDesertButton.colors.highlightedColor;
                 backgroundImage.sprite = desertSprite;
                 break;
             case Theme.Illusion:
-                themeIllusionButton.GetComponentInChildren<Text>().color = themeIllusionButton.colors.highlightedColor;
-                backgroundImage.color = new Color(0.9f, 0.9f, 0.9f);
+                themeIllusionText.color = themeIllusionButton.colors.highlightedColor;
+                backgroundImage.color = ColorUtil.DarkWhite;
                 backgroundImage.sprite = illusionSprite;
                 break;
         }
@@ -214,27 +233,27 @@ public class MainController : MonoBehaviour
 
     private void UpdateLevel()
     {
-        levelEasyButton.GetComponentInChildren<Text>().color = new Color(0.9f, 0.9f, 0.9f);
-        levelNormalButton.GetComponentInChildren<Text>().color = new Color(0.9f, 0.9f, 0.9f);
-        levelHardButton.GetComponentInChildren<Text>().color = new Color(0.9f, 0.9f, 0.9f);
-        sizeText.text = MazeColumns + " X " + MazeRows;
+        levelEasyText.color = ColorUtil.DarkWhite;
+        levelNormalText.color = ColorUtil.DarkWhite;
+        levelHardText.color = ColorUtil.DarkWhite;
+        sizeText.text = MazeColumns + " X " + MazeRows; // TODO
 
         switch (level)
         {
             case Level.None:
                 sizeText.color = Color.white;
-                sizeText.text = "";
+                sizeText.text = string.Empty;
                 break;
             case Level.Easy:
-                levelEasyButton.GetComponentInChildren<Text>().color = levelEasyButton.colors.highlightedColor;
+                levelEasyText.color = levelEasyButton.colors.highlightedColor;
                 sizeText.color = levelEasyButton.colors.pressedColor;
                 break;
             case Level.Normal:
-                levelNormalButton.GetComponentInChildren<Text>().color = levelNormalButton.colors.highlightedColor;
+                levelNormalText.color = levelNormalButton.colors.highlightedColor;
                 sizeText.color = levelNormalButton.colors.pressedColor;
                 break;
             case Level.Hard:
-                levelHardButton.GetComponentInChildren<Text>().color = levelHardButton.colors.highlightedColor;
+                levelHardText.color = levelHardButton.colors.highlightedColor;
                 sizeText.color = levelHardButton.colors.pressedColor;
                 break;
         }
@@ -250,7 +269,11 @@ public class MainController : MonoBehaviour
 
     public void QuitGame()
     {
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
         Application.Quit();
+#endif
     }
 
     public void BGMButton()
@@ -258,34 +281,39 @@ public class MainController : MonoBehaviour
         if (!isBGMOff)
         {
             isBGMOff = true;
-            bgm.GetComponent<AudioSource>().volume = 0f;
-            bgm.GetComponent<Text>().text = "<color=#0098E6>◆</color> BGM (Off)";
+            bgmAudioSource.volume = 0f;
+            bgmText.text = "    BGM (Off)";
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f,
-                normalColor = new Color(0.9f, 0.9f, 0.9f),
-                disabledColor = new Color(0.9f, 0.9f, 0.9f),
-                highlightedColor = new Color(0f, 0.5929411f, 0.9f),
-                selectedColor = new Color(0f, 0.5929411f, 0.9f),
-                pressedColor = new Color(0f, 0.6588235f, 1f)
+                normalColor = ColorUtil.DarkWhite,
+                disabledColor = ColorUtil.DarkWhite,
+                highlightedColor = ColorUtil.Blue,
+                selectedColor = ColorUtil.Blue,
+                pressedColor = ColorUtil.BrightBlue
             };
         }
         else
         {
             isBGMOff = false;
-            bgm.GetComponent<AudioSource>().volume = 1f;
-            bgm.GetComponent<Text>().text = "<color=#00E64E>◆</color> BGM (On)";
+            bgmAudioSource.volume = 1f;
+            bgmText.text = "    BGM (On)";
             bgmButton.colors = new ColorBlock
             {
                 colorMultiplier = 1f,
                 fadeDuration = 0.1f,
-                normalColor = new Color(0.9f, 0.9f, 0.9f),
-                disabledColor = new Color(0.9f, 0.9f, 0.9f),
-                highlightedColor = new Color(0f, 0.9f, 0.3070588f),
-                selectedColor = new Color(0f, 0.9f, 0.3070588f),
-                pressedColor = new Color(0f, 1f, 0.3411765f)
+                normalColor = ColorUtil.DarkWhite,
+                disabledColor = ColorUtil.DarkWhite,
+                highlightedColor = ColorUtil.Green,
+                selectedColor = ColorUtil.Green,
+                pressedColor = ColorUtil.BrightGreen
             };
         }
+    }
+
+    public void GitHubButton(string username)
+    {
+        Application.OpenURL($"https://github.com/{username}");
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Cinemachine;
+using TMPro;
 
 public class GameController : MonoBehaviour
 {
@@ -23,15 +24,15 @@ public class GameController : MonoBehaviour
     public List<AudioClip> footsteps;
     public GameObject mobileMenuUI;
     public Button mobileMenuButton;
-    public Text mobileMenuButtonText;
+    public TMP_Text mobileMenuButtonText;
     public GameObject mobileMenu;
-    public Text mobileSoundButtonText;
+    public TMP_Text mobileSoundButtonText;
     public GameObject pcMenuUI;
     public Button pcMenuButton;
-    public Text pcMenuButtonText;
+    public TMP_Text pcMenuButtonText;
     public GameObject pcMenu;
-    public Text pcSoundButtonText;
-    public Text timeText;
+    public TMP_Text pcSoundButtonText;
+    public TMP_Text timeText;
     public DistanceSlider progressSlider;
     public AudioClip exitClip;
     public AudioClip timeoutClip;
@@ -63,6 +64,7 @@ public class GameController : MonoBehaviour
 
     private SwatMovement _player;
     private AudioSource _audioSource;
+    private RectTransform _pcMenuButtonRectTransform;
 
     private void Awake()
     {
@@ -89,6 +91,7 @@ public class GameController : MonoBehaviour
         virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 250f;
         mobileMenuUI.SetActive(false);
         pcMenuUI.SetActive(true);
+        _pcMenuButtonRectTransform = pcMenuButton.GetComponent<RectTransform>();
 #else
         touchInput.SetActive(true);
         mobileMenuUI.SetActive(true);
@@ -266,10 +269,11 @@ public class GameController : MonoBehaviour
             new Vector3(edgeLength * (mazeRows - 0.25f), 0f, edgeLength * (mazeColumns + 0.5f)),
             Quaternion.Euler(0, 216f, 0));
         p.GetComponent<SwatMovement>().enabled = false;
-        p.GetComponent<Animator>().SetInteger("AnimationState", 4);
-        p.GetComponent<Animator>().SetBool("IsSprinting", false);
-        p.GetComponent<Animator>().SetBool("NeedTurnLeft", false);
-        p.GetComponent<Animator>().SetBool("NeedTurnRight", false);
+        Animator pAnimator = p.GetComponent<Animator>();
+        pAnimator.SetInteger("AnimationState", 4);
+        pAnimator.SetBool("IsSprinting", false);
+        pAnimator.SetBool("NeedTurnLeft", false);
+        pAnimator.SetBool("NeedTurnRight", false);
 
         for (int i = -1; i > -9; i--)
         {
@@ -305,7 +309,7 @@ public class GameController : MonoBehaviour
                 _audioSource.volume = 0f;
                 _player.audioSource.volume = 0f;
                 //soundButtonText.text = "<color=#E69900>◆</color> Sound (Off)";
-                mobileSoundButtonText.text = "Sound (Off) <color=#E69900>◆</color>";
+                mobileSoundButtonText.text = "Sound (Off) <color=#E69900>◆</color>";    // TODO
             }
             else
             {
@@ -408,6 +412,8 @@ public class GameController : MonoBehaviour
                 _audioSource.Play();
             }
         }
+        
+        // TODO: 텍스트 빌딩
 
         int sign = (int)Mathf.Sign(_time);
         int hour = Mathf.Abs((int)_time / 3600);
@@ -444,7 +450,7 @@ public class GameController : MonoBehaviour
         }
         else if (_hasExited)
         {
-            timeText.text += "Congraturations!";
+            timeText.text += "Congratulations!";
         }
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
         else if (!_hasPressedShift)
@@ -468,9 +474,10 @@ public class GameController : MonoBehaviour
             }
         }
 
+        Vector3 position = _player.transform.position;
         _distanceCurrentValue = new Vector2(
-            _player.GetComponent<Transform>().position.x / _distanceMaxValue.x,
-            _player.GetComponent<Transform>().position.z / _distanceMaxValue.y
+            position.x / _distanceMaxValue.x,
+            position.z / _distanceMaxValue.y
         );
         progressSlider.SetValues(_distanceCurrentValue);
     }
@@ -482,8 +489,8 @@ public class GameController : MonoBehaviour
             _isMenuShowed = false;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(false);
-            pcMenuButton.GetComponent<RectTransform>().anchorMax = new Vector2(0.11f, 0.98f);
-            pcMenuButtonText.text = "<color=#E6C700>◆</color> Menu";
+            _pcMenuButtonRectTransform.anchorMax = new Vector2(0.11f, 0.98f);
+            pcMenuButtonText.text = "<color=#E6C700>◆</color> Menu";    // TODO
             Cursor.visible = false;
 #else
             mobileMenu.SetActive(false);
@@ -495,7 +502,7 @@ public class GameController : MonoBehaviour
             _isMenuShowed = true;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(true);
-            pcMenuButton.GetComponent<RectTransform>().anchorMax = new Vector2(0.15f, 0.98f);
+            _pcMenuButtonRectTransform.anchorMax = new Vector2(0.15f, 0.98f);
             pcMenuButtonText.text = "<color=#E6C700>◆</color> Hide Menu";
             Cursor.visible = false;
 #else
