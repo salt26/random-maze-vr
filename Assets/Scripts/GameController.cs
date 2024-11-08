@@ -40,6 +40,7 @@ public class GameController : MonoBehaviour
     public Camera mainCamera;
     public CinemachineVirtualCamera virtualCamera;
     public GameObject touchInput;
+    public GameObject xrOrigin;
 
     public float initialTime = 300f;
     public Vector3 initialPlayerPosition;
@@ -78,7 +79,7 @@ public class GameController : MonoBehaviour
         }
         gc = this;
 
-        GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity);
+        GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, xrOrigin.transform);
         _player = p.GetComponent<SwatMovement>();
         _player.mainCamera = mainCamera;
         virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
