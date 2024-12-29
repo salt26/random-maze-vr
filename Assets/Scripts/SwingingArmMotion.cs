@@ -11,7 +11,7 @@ public class SwingingArmMotion : MonoBehaviour
     [SerializeField] private GameObject LeftHand;
     [SerializeField] private GameObject RightHand;
     [SerializeField] private GameObject MainCamera;
-    [SerializeField] private GameObject ForwardDirection;
+    public GameObject ForwardDirection;
 
     //Vector3 Positions
     [SerializeField] private Vector3 PositionPreviousFrameLeftHand;
@@ -20,6 +20,8 @@ public class SwingingArmMotion : MonoBehaviour
     [SerializeField] private Vector3 PlayerPositionCurrentFrame;
     [SerializeField] private Vector3 PositionCurrentFrameLeftHand;
     [SerializeField] private Vector3 PositionCurrentFrameRightHand;
+    
+    [SerializeField] private CharacterController characterController;
 
     //Speed
     [SerializeField] private float Speed = 100;
@@ -66,7 +68,8 @@ public class SwingingArmMotion : MonoBehaviour
 
         if (Time.timeSinceLevelLoad > 1f)
         {
-            xrOrigin.transform.position += ForwardDirection.transform.forward * (_totalMoved / 60) * Speed * Time.deltaTime;
+            characterController.Move((_totalMoved / 60) * Speed * Time.deltaTime * ForwardDirection.transform.forward);
+            // xrOrigin.transform.position += ForwardDirection.transform.forward * (_totalMoved / 60) * Speed * Time.deltaTime;
         }
 
         // set previous position of hands for next frame

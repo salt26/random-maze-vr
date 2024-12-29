@@ -42,6 +42,8 @@ public class GameController : MonoBehaviour
     public GameObject touchInput;
     public GameObject xrOrigin;
 
+    public Transform cameraOffsetTransform;
+
     public float initialTime = 300f;
     public Vector3 initialPlayerPosition;
 
@@ -64,6 +66,8 @@ public class GameController : MonoBehaviour
     private Vector2 _distanceMaxValue;
     private Vector2 _distanceCurrentValue;
 
+    public SwingingArmMotion sam;
+
     private SwatMovement _player;
     private AudioSource _audioSource;
     private static readonly int State = Animator.StringToHash("AnimationState");
@@ -79,11 +83,15 @@ public class GameController : MonoBehaviour
         }
         gc = this;
 
-        GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, xrOrigin.transform);
+        GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, cameraOffsetTransform.transform);
         _player = p.GetComponent<SwatMovement>();
         _player.mainCamera = mainCamera;
+
+        p.GetComponent<SwatMovement>().enabled = false;
         virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
         _audioSource = GetComponent<AudioSource>();
+
+        sam.ForwardDirection = p;
     }
 
     private void Start()
@@ -269,6 +277,8 @@ public class GameController : MonoBehaviour
             new Vector3(edgeLength * (2 * mazeRows - 1) / 2f, 0f, edgeLength * mazeColumns) + transform.position,
             Quaternion.Euler(0, 90f + 180f * Random.Range(0, 2), 0));
 
+        
+        // This is NPC;;;
         GameObject p = Instantiate(playerPrefab, 
             new Vector3(edgeLength * (mazeRows - 0.25f), 0f, edgeLength * (mazeColumns + 0.5f)),
             Quaternion.Euler(0, 216f, 0));

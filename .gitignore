@@ -77,3 +77,5 @@ Ignore/
 
 # Big file
 /Assets/Scenes/Desert/LightingData.asset
+
+.vscode/
