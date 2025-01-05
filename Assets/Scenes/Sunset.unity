@@ -1312,7 +1312,7 @@ MonoBehaviour:
   xrOrigin: {fileID: 1109054940}
   cameraOffsetTransform: {fileID: 6779845596570854696}
   initialTime: 305
-  initialPlayerPosition: {x: 2.3, y: 0, z: -4}
+  initialPlayerPosition: {x: 0, y: 1.36144, z: 0}
   mazeFromFile: 0
   mazeColumns: 24
   mazeRows: 24
