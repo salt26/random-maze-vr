@@ -41,11 +41,13 @@ public class GameController : MonoBehaviour
     public CinemachineVirtualCamera virtualCamera;
     public GameObject touchInput;
     public GameObject xrOrigin;
+    public AudioSource playerAudioSource;
 
     public Transform cameraOffsetTransform;
 
     public float initialTime = 300f;
     public Vector3 initialPlayerPosition;
+    public Vector3 initialXrOriginPosition;
 
     public bool mazeFromFile = false;
 
@@ -68,7 +70,7 @@ public class GameController : MonoBehaviour
 
     public SwingingArmMotion sam;
 
-    private SwatMovement _player;
+    //private SwatMovement _player;
     private AudioSource _audioSource;
     private static readonly int State = Animator.StringToHash("AnimationState");
     private static readonly int IsSprinting = Animator.StringToHash("IsSprinting");
@@ -83,15 +85,14 @@ public class GameController : MonoBehaviour
         }
         gc = this;
 
-        GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, cameraOffsetTransform.transform);
-        _player = p.GetComponent<SwatMovement>();
-        _player.mainCamera = mainCamera;
-
-        p.GetComponent<SwatMovement>().enabled = false;
-        virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
+        // GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, cameraOffsetTransform.transform);
+        // _player = p.GetComponent<SwatMovement>();
+        // _player.mainCamera = mainCamera;
+        //
+        // p.GetComponent<SwatMovement>().enabled = false;
+        // virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
         _audioSource = GetComponent<AudioSource>();
 
-        sam.ForwardDirection = p;
     }
 
     private void Start()
@@ -112,7 +113,8 @@ public class GameController : MonoBehaviour
         if (MainController.mc.isSoundOff)
         {
             _audioSource.volume = 0f;
-            _player.audioSource.volume = 0f;
+            //_player.audioSource.volume = 0f;
+            playerAudioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (Off)";
 #else
@@ -122,7 +124,8 @@ public class GameController : MonoBehaviour
         else
         {
             _audioSource.volume = 1f;
-            _player.audioSource.volume = 1f;
+            // _player.audioSource.volume = 1f;
+            playerAudioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (On)";
 #else
@@ -321,13 +324,15 @@ public class GameController : MonoBehaviour
             if (MainController.mc.isSoundOff)
             {
                 _audioSource.volume = 0f;
-                _player.audioSource.volume = 0f;
+                // _player.audioSource.volume = 0f;
+                playerAudioSource.volume = 0f;
                 mobileSoundButtonText.text = "Sound (Off)";    // TODO
             }
             else
             {
                 _audioSource.volume = 1f;
-                _player.audioSource.volume = 1f;
+                // _player.audioSource.volume = 1f;
+                playerAudioSource.volume = 1f;
                 mobileSoundButtonText.text = "Sound (On)";
             }
         }
@@ -490,7 +495,7 @@ public class GameController : MonoBehaviour
 
         timeText.text = sb.ToString();
 
-        Vector3 position = _player.transform.position;
+        Vector3 position = playerAudioSource.transform.position;
         _distanceCurrentValue = new Vector2(
             position.x / _distanceMaxValue.x,
             position.z / _distanceMaxValue.y
@@ -532,7 +537,8 @@ public class GameController : MonoBehaviour
         {
             MainController.mc.isSoundOff = true;
             _audioSource.volume = 0f;
-            _player.audioSource.volume = 0f;
+            // _player.audioSource.volume = 0f;
+            playerAudioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (Off)";
 #else
@@ -543,7 +549,8 @@ public class GameController : MonoBehaviour
         {
             MainController.mc.isSoundOff = false;
             _audioSource.volume = 1f;
-            _player.audioSource.volume = 1f;
+            // _player.audioSource.volume = 1f;
+            playerAudioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (On)";
 #else
@@ -554,7 +561,8 @@ public class GameController : MonoBehaviour
 
     public void MoveButton()
     {
-        _player.transform.position = initialPlayerPosition;
+        //_player.transform.position = initialPlayerPosition;
+        xrOrigin.transform.position = initialXrOriginPosition;
     }
 
     public void NewButton()

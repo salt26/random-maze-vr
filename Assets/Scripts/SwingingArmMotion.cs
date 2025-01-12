@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.XR;
 
 public class SwingingArmMotion : MonoBehaviour
@@ -11,7 +12,6 @@ public class SwingingArmMotion : MonoBehaviour
     [SerializeField] private GameObject LeftHand;
     [SerializeField] private GameObject RightHand;
     [SerializeField] private GameObject MainCamera;
-    public GameObject ForwardDirection;
 
     //Vector3 Positions
     [SerializeField] private Vector3 PositionPreviousFrameLeftHand;
@@ -24,11 +24,13 @@ public class SwingingArmMotion : MonoBehaviour
     [SerializeField] private CharacterController characterController;
 
     //Speed
-    [SerializeField] private float Speed = 100;
+    [SerializeField] private float BaseSpeed = 100;
     [SerializeField] private float HandSpeed;
 
     private float _totalMoved;
     private Queue<(float, float)> _movementQueue = new Queue<(float, float)>();
+
+    public float speed => Time.timeSinceLevelLoad > 1f ? (_totalMoved / 60) * BaseSpeed : 0f;
 
     void Start()
     {
@@ -40,10 +42,6 @@ public class SwingingArmMotion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // get forward direction from the center eye camera and set it to the forward direction object
-        float yRotation = MainCamera.transform.eulerAngles.y;
-        ForwardDirection.transform.eulerAngles = new Vector3(0, yRotation, 0);
-
         // get positions of hands
         PositionCurrentFrameLeftHand = LeftHand.transform.position;
         PositionCurrentFrameRightHand = RightHand.transform.position;
@@ -68,7 +66,9 @@ public class SwingingArmMotion : MonoBehaviour
 
         if (Time.timeSinceLevelLoad > 1f)
         {
-            characterController.Move((_totalMoved / 60) * Speed * Time.deltaTime * ForwardDirection.transform.forward);
+            // get forward direction from the center eye camera and set it to the forward direction object
+            Quaternion q = Quaternion.Euler(0, MainCamera.transform.eulerAngles.y, 0);
+            characterController.Move((_totalMoved / 60) * BaseSpeed * Time.deltaTime * (q * Vector3.forward));
             // xrOrigin.transform.position += ForwardDirection.transform.forward * (_totalMoved / 60) * Speed * Time.deltaTime;
         }
 
