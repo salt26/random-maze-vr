@@ -22,6 +22,8 @@ public class SwingingArmMotion : MonoBehaviour
     [SerializeField] private Vector3 PositionCurrentFrameRightHand;
     
     [SerializeField] private CharacterController characterController;
+    [SerializeField] private TrackedPoseDriverVariant _trackedPoseDriver;
+    public Vector3 movement;
 
     //Speed
     [SerializeField] private float BaseSpeed = 100;
@@ -34,9 +36,11 @@ public class SwingingArmMotion : MonoBehaviour
 
     void Start()
     {
-        PlayerPositionPreviousFrame = transform.position; //set current positions
+        //PlayerPositionPreviousFrame = transform.position; //set current positions
+        PlayerPositionPreviousFrame = _trackedPoseDriver.transform.position; //set current positions
         PositionPreviousFrameLeftHand = LeftHand.transform.position; //set previous positions
         PositionPreviousFrameRightHand = RightHand.transform.position;
+        movement = new Vector3();
     }
 
     // Update is called once per frame
@@ -47,7 +51,8 @@ public class SwingingArmMotion : MonoBehaviour
         PositionCurrentFrameRightHand = RightHand.transform.position;
 
         // position of player
-        PlayerPositionCurrentFrame = transform.position;
+        //PlayerPositionCurrentFrame = transform.position;
+        PlayerPositionCurrentFrame = _trackedPoseDriver.transform.position;
 
         // get distance the hands and player has moved from last frame
         var playerDistanceMoved = Vector3.Distance(PlayerPositionCurrentFrame, PlayerPositionPreviousFrame);
@@ -68,7 +73,13 @@ public class SwingingArmMotion : MonoBehaviour
         {
             // get forward direction from the center eye camera and set it to the forward direction object
             Quaternion q = Quaternion.Euler(0, MainCamera.transform.eulerAngles.y, 0);
-            characterController.Move((_totalMoved / 60) * BaseSpeed * Time.deltaTime * (q * Vector3.forward));
+            //_trackedPoseDriver.movement = (_totalMoved / 60) * BaseSpeed * Time.deltaTime * (q * Vector3.forward);
+            Vector3 velocity = (_totalMoved / 60) * BaseSpeed * Time.deltaTime * (q * Vector3.forward);
+            Vector3 newVelocity = velocity + movement;
+            Debug.Log($"Before SwingingArmMotion ({_trackedPoseDriver.transform.localPosition.x}, {_trackedPoseDriver.transform.localPosition.z})");
+            Debug.Log($"SwingingArmMotion: ({velocity.x}, {velocity.z}) + movement = ({newVelocity.x}, {newVelocity.z})");
+            characterController.Move(newVelocity);
+            Debug.Log($"After  SwingingArmMotion ({_trackedPoseDriver.transform.localPosition.x}, {_trackedPoseDriver.transform.localPosition.z})");
             // xrOrigin.transform.position += ForwardDirection.transform.forward * (_totalMoved / 60) * Speed * Time.deltaTime;
         }
 

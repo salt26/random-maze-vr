@@ -725,6 +725,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  swingingArmMotion: {fileID: 0}
+  movement: {x: 0, y: 0, z: 0}
 --- !u!114 &8704884950093863345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1166,7 +1168,9 @@ MonoBehaviour:
   PlayerPositionCurrentFrame: {x: 0, y: 0, z: 0}
   PositionCurrentFrameLeftHand: {x: 0, y: 0, z: 0}
   PositionCurrentFrameRightHand: {x: 0, y: 0, z: 0}
-  characterController: {fileID: 8243965599881957839}
+  characterController: {fileID: 8288529079053300026}
+  _trackedPoseDriver: {fileID: 6121968878226133827}
+  movement: {x: 0, y: 0, z: 0}
   BaseSpeed: 200
   HandSpeed: 0
 --- !u!114 &8007236983866687556
@@ -1381,7 +1385,7 @@ CharacterController:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 1.36144
   m_Radius: 0.5
@@ -1576,6 +1580,7 @@ GameObject:
   - component: {fileID: 7778426412811714102}
   - component: {fileID: 3600795184054653157}
   - component: {fileID: 2387577182520570640}
+  - component: {fileID: 8288529079053300026}
   - component: {fileID: 6121968878226133827}
   m_Layer: 0
   m_Name: Collider
@@ -1644,12 +1649,38 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!143 &8288529079053300026
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6999704011540626084}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1.36144
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.5
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.76072, z: 0}
 --- !u!114 &6121968878226133827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1663,7 +1694,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrackingType: 0
-  m_UpdateType: 0
+  m_UpdateType: 2
   m_IgnoreTrackingState: 0
   m_PositionInput:
     m_UseReference: 1
@@ -1722,6 +1753,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  swingingArmMotion: {fileID: 2963237180085960701}
+  movement: {x: 0, y: 0, z: 0}
 --- !u!1 &7183086952606171102
 GameObject:
   m_ObjectHideFlags: 0

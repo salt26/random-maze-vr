@@ -9,6 +9,9 @@ public class TrackedPoseDriverVariant : TrackedPoseDriver
     private Transform m_MainCameraTransform;
     private Collider m_collider;
     private Rigidbody m_Rigidbody;
+    private CharacterController m_CharacterController;
+    public SwingingArmMotion swingingArmMotion;
+    public Vector3 movement;
     
     protected override void Awake()
     {
@@ -16,6 +19,8 @@ public class TrackedPoseDriverVariant : TrackedPoseDriver
         m_MainCameraTransform = GetComponentInChildren<Camera>().transform;
         m_collider = GetComponent<Collider>();
         m_Rigidbody = GetComponent<Rigidbody>();
+        m_CharacterController = GetComponent<CharacterController>();
+        movement = new Vector3();
     }
 
     /// <summary>
@@ -32,8 +37,10 @@ public class TrackedPoseDriverVariant : TrackedPoseDriver
         Vector3 localPosition = new Vector3(newPosition.x, 0f, newPosition.z);
         
         //Vector3 pos = new Vector3(newPosition.x, 0f, newPosition.z);
-        //m_CharacterController.Move(Time.deltaTime * localPosition);
-        transform.localPosition = localPosition;
+        //transform.localPosition = localPosition;
+        //m_CharacterController.Move(movement + localPosition - transform.localPosition);
+        //swingingArmMotion.movement = localPosition - transform.localPosition;
+        Debug.Log($"SetLocalTransform movement: ({swingingArmMotion.movement.x}, {swingingArmMotion.movement.z})");
         m_MainCameraTransform.localPosition = new Vector3(0f, newPosition.y, 0f);
         m_MainCameraTransform.localRotation = newRotation;
     }
