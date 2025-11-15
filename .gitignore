@@ -79,3 +79,4 @@ Ignore/
 /Assets/Scenes/Desert/LightingData.asset
 
 .vscode/
+**/.DS_Store
