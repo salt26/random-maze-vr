@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Cinemachine;
 using TMPro;
 
 public class GameController : MonoBehaviour
@@ -38,7 +37,6 @@ public class GameController : MonoBehaviour
     public AudioClip exitClip;
     public AudioClip timeoutClip;
     public Camera mainCamera;
-    public CinemachineVirtualCamera virtualCamera;
     public GameObject touchInput;
     public GameObject xrOrigin;
     public AudioSource playerAudioSource;
@@ -97,19 +95,9 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-        Cursor.visible = false;
-        touchInput.SetActive(false);
-        virtualCamera.AddCinemachineComponent<CinemachinePOV>();
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 250f;
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 250f;
-        mobileMenuUI.SetActive(false);
-        pcMenuUI.SetActive(true);
-#else
         touchInput.SetActive(true);
         mobileMenuUI.SetActive(true);
         pcMenuUI.SetActive(false);
-#endif
         if (MainController.mc.isSoundOff)
         {
             _audioSource.volume = 0f;
