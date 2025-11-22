@@ -76,4 +76,6 @@ Ignore/
 .idea/
 
 # Big file
-Assets/Scenes/*/LightingData.asset
+/Assets/Scenes/Desert/LightingData.asset
+
+.vscode/

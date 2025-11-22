@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Cinemachine;
 using TMPro;
 
 public class GameController : MonoBehaviour
@@ -38,11 +37,15 @@ public class GameController : MonoBehaviour
     public AudioClip exitClip;
     public AudioClip timeoutClip;
     public Camera mainCamera;
-    public CinemachineVirtualCamera virtualCamera;
     public GameObject touchInput;
+    public GameObject xrOrigin;
+    public AudioSource playerAudioSource;
+
+    public Transform cameraOffsetTransform;
 
     public float initialTime = 300f;
     public Vector3 initialPlayerPosition;
+    public Vector3 initialXrOriginPosition;
 
     public bool mazeFromFile = false;
 
@@ -63,7 +66,9 @@ public class GameController : MonoBehaviour
     private Vector2 _distanceMaxValue;
     private Vector2 _distanceCurrentValue;
 
-    private SwatMovement _player;
+    public SwingingArmMotion sam;
+
+    //private SwatMovement _player;
     private AudioSource _audioSource;
     private static readonly int State = Animator.StringToHash("AnimationState");
     private static readonly int IsSprinting = Animator.StringToHash("IsSprinting");
@@ -78,32 +83,26 @@ public class GameController : MonoBehaviour
         }
         gc = this;
 
-        GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity);
-        _player = p.GetComponent<SwatMovement>();
-        _player.mainCamera = mainCamera;
-        virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
+        // GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, cameraOffsetTransform.transform);
+        // _player = p.GetComponent<SwatMovement>();
+        // _player.mainCamera = mainCamera;
+        //
+        // p.GetComponent<SwatMovement>().enabled = false;
+        // virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
         _audioSource = GetComponent<AudioSource>();
+
     }
 
     private void Start()
     {
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-        Cursor.visible = false;
-        touchInput.SetActive(false);
-        virtualCamera.AddCinemachineComponent<CinemachinePOV>();
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = 250f;
-        virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = 250f;
-        mobileMenuUI.SetActive(false);
-        pcMenuUI.SetActive(true);
-#else
         touchInput.SetActive(true);
         mobileMenuUI.SetActive(true);
         pcMenuUI.SetActive(false);
-#endif
         if (MainController.mc.isSoundOff)
         {
             _audioSource.volume = 0f;
-            _player.audioSource.volume = 0f;
+            //_player.audioSource.volume = 0f;
+            playerAudioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (Off)";
 #else
@@ -113,7 +112,8 @@ public class GameController : MonoBehaviour
         else
         {
             _audioSource.volume = 1f;
-            _player.audioSource.volume = 1f;
+            // _player.audioSource.volume = 1f;
+            playerAudioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (On)";
 #else
@@ -268,6 +268,8 @@ public class GameController : MonoBehaviour
             new Vector3(edgeLength * (2 * mazeRows - 1) / 2f, 0f, edgeLength * mazeColumns) + transform.position,
             Quaternion.Euler(0, 90f + 180f * Random.Range(0, 2), 0));
 
+        
+        // This is NPC;;;
         GameObject p = Instantiate(playerPrefab, 
             new Vector3(edgeLength * (mazeRows - 0.25f), 0f, edgeLength * (mazeColumns + 0.5f)),
             Quaternion.Euler(0, 216f, 0));
@@ -310,13 +312,15 @@ public class GameController : MonoBehaviour
             if (MainController.mc.isSoundOff)
             {
                 _audioSource.volume = 0f;
-                _player.audioSource.volume = 0f;
+                // _player.audioSource.volume = 0f;
+                playerAudioSource.volume = 0f;
                 mobileSoundButtonText.text = "Sound (Off)";    // TODO
             }
             else
             {
                 _audioSource.volume = 1f;
-                _player.audioSource.volume = 1f;
+                // _player.audioSource.volume = 1f;
+                playerAudioSource.volume = 1f;
                 mobileSoundButtonText.text = "Sound (On)";
             }
         }
@@ -479,7 +483,7 @@ public class GameController : MonoBehaviour
 
         timeText.text = sb.ToString();
 
-        Vector3 position = _player.transform.position;
+        Vector3 position = playerAudioSource.transform.position;
         _distanceCurrentValue = new Vector2(
             position.x / _distanceMaxValue.x,
             position.z / _distanceMaxValue.y
@@ -521,7 +525,8 @@ public class GameController : MonoBehaviour
         {
             MainController.mc.isSoundOff = true;
             _audioSource.volume = 0f;
-            _player.audioSource.volume = 0f;
+            // _player.audioSource.volume = 0f;
+            playerAudioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (Off)";
 #else
@@ -532,7 +537,8 @@ public class GameController : MonoBehaviour
         {
             MainController.mc.isSoundOff = false;
             _audioSource.volume = 1f;
-            _player.audioSource.volume = 1f;
+            // _player.audioSource.volume = 1f;
+            playerAudioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (On)";
 #else
@@ -543,7 +549,8 @@ public class GameController : MonoBehaviour
 
     public void MoveButton()
     {
-        _player.transform.position = initialPlayerPosition;
+        //_player.transform.position = initialPlayerPosition;
+        xrOrigin.transform.position = initialXrOriginPosition;
     }
 
     public void NewButton()

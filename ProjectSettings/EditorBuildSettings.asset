@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/Main.unity
     guid: a67a4548975ac064f9599c1023388325
@@ -18,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Illusion.unity
     guid: 02bb88c8da4c0ba49a929e9c7332bd92
   m_configObjects:
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: d2fc080aaa063b64bbc86526d8acb36b,
-      type: 2}
-    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 783c5140590553b4a90736a82281b155,
-      type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 955a02f2ce605c3488035570fa02e673, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: f605608036137274cb3162a1642be8ac, type: 2}
+  m_UseUCBPForAssetBundles: 0
