@@ -22,11 +22,6 @@ public class GameController : MonoBehaviour
     public GameObject colliderExit;
     public GameObject playerPrefab;
     public List<AudioClip> footsteps;
-    public GameObject mobileMenuUI;
-    public Button mobileMenuButton;
-    public TMP_Text mobileMenuButtonText;
-    public GameObject mobileMenu;
-    public TMP_Text mobileSoundButtonText;
     public GameObject pcMenuUI;
     public Button pcMenuButton;
     public TMP_Text pcMenuButtonText;
@@ -35,7 +30,6 @@ public class GameController : MonoBehaviour
     public DistanceSlider progressSlider;
     public AudioClip exitClip;
     public Camera mainCamera;
-    public GameObject touchInput;
     public GameObject xrOrigin;
     public AudioSource playerAudioSource;
 
@@ -90,8 +84,6 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        touchInput.SetActive(true);
-        mobileMenuUI.SetActive(true);
         pcMenuUI.SetActive(false);
         if (MainController.mc.isSoundOff)
         {
@@ -100,8 +92,6 @@ public class GameController : MonoBehaviour
             playerAudioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (Off)";
-#else
-            mobileSoundButtonText.text = "Sound (Off)";
 #endif
         }
         else
@@ -111,8 +101,6 @@ public class GameController : MonoBehaviour
             playerAudioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (On)";
-#else
-            mobileSoundButtonText.text = "Sound (On)";
 #endif
         }
 
@@ -322,14 +310,12 @@ public class GameController : MonoBehaviour
                 _audioSource.volume = 0f;
                 // _player.audioSource.volume = 0f;
                 playerAudioSource.volume = 0f;
-                mobileSoundButtonText.text = "Sound (Off)"; // TODO
             }
             else
             {
                 _audioSource.volume = 1f;
                 // _player.audioSource.volume = 1f;
                 playerAudioSource.volume = 1f;
-                mobileSoundButtonText.text = "Sound (On)";
             }
         }
     }
@@ -456,9 +442,6 @@ public class GameController : MonoBehaviour
             pcMenu.SetActive(false);
             pcMenuButtonText.text = "Menu"; // TODO
             Cursor.visible = false;
-#else
-            mobileMenu.SetActive(false);
-            mobileMenuButtonText.text = "Menu";
 #endif
         }
         else
@@ -468,9 +451,6 @@ public class GameController : MonoBehaviour
             pcMenu.SetActive(true);
             pcMenuButtonText.text = "Hide Menu";
             Cursor.visible = false;
-#else
-            mobileMenu.SetActive(true);
-            mobileMenuButtonText.text = "Hide Menu";
 #endif
         }
     }
@@ -485,8 +465,6 @@ public class GameController : MonoBehaviour
             playerAudioSource.volume = 0f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (Off)";
-#else
-            mobileSoundButtonText.text = "Sound (Off)";
 #endif
         }
         else
@@ -497,8 +475,6 @@ public class GameController : MonoBehaviour
             playerAudioSource.volume = 1f;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcSoundButtonText.text = "Sound (On)";
-#else
-            mobileSoundButtonText.text = "Sound (On)";
 #endif
         }
     }
