@@ -32,10 +32,8 @@ public class GameController : MonoBehaviour
     public TMP_Text pcMenuButtonText;
     public GameObject pcMenu;
     public TMP_Text pcSoundButtonText;
-    public TMP_Text timeText;
     public DistanceSlider progressSlider;
     public AudioClip exitClip;
-    public AudioClip timeoutClip;
     public Camera mainCamera;
     public GameObject touchInput;
     public GameObject xrOrigin;
@@ -43,7 +41,6 @@ public class GameController : MonoBehaviour
 
     public Transform cameraOffsetTransform;
 
-    public float initialTime = 300f;
     public Vector3 initialPlayerPosition;
     public Vector3 initialXrOriginPosition;
 
@@ -53,15 +50,13 @@ public class GameController : MonoBehaviour
     public int mazeRows = 15;
     public int mazeInnerColumns = 5;
     public int mazeInnerRows = 5;
-    public float mazeDropProbability = 0.02f;   // When this is 0.0f, only one way exists
+    public float mazeDropProbability = 0.02f; // When this is 0.0f, only one way exists
 
-    private float _time;
     private int[,] _maze;
     private bool _hasExited = false;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
     private bool _hasPressedShift = false;
 #endif
-    private bool _isTimeout = false;
     private bool _isMenuShowed = false;
     private Vector2 _distanceMaxValue;
     private Vector2 _distanceCurrentValue;
@@ -81,6 +76,7 @@ public class GameController : MonoBehaviour
         {
             Destroy(gc.gameObject);
         }
+
         gc = this;
 
         // GameObject p = Instantiate(playerPrefab, initialPlayerPosition, /*Quaternion.Euler(0f, 180f, 0f)*/ Quaternion.identity, cameraOffsetTransform.transform);
@@ -90,7 +86,6 @@ public class GameController : MonoBehaviour
         // p.GetComponent<SwatMovement>().enabled = false;
         // virtualCamera.Follow = GameObject.FindGameObjectWithTag("Jaw").GetComponent<Transform>();
         _audioSource = GetComponent<AudioSource>();
-
     }
 
     private void Start()
@@ -131,7 +126,6 @@ public class GameController : MonoBehaviour
         {
             mazeColumns = MainController.mc.MazeColumns;
             mazeRows = MainController.mc.MazeRows;
-            initialTime = MainController.mc.InitialTime;
         }
 
         mazeColumns = Mathf.Clamp(mazeColumns, 5, 26);
@@ -170,9 +164,11 @@ public class GameController : MonoBehaviour
             }
             */
         }
+
         if (!fileExist)
         {
-            _maze = mMazeGenerator.FromDimensions(mazeColumns, mazeRows, mazeInnerColumns, mazeInnerRows, mazeDropProbability);
+            _maze = mMazeGenerator.FromDimensions(mazeColumns, mazeRows, mazeInnerColumns, mazeInnerRows,
+                mazeDropProbability);
             // make two entrances
             _maze[0, 1] = 0;
             _maze[2 * mazeColumns, 2 * mazeRows - 1] = 0;
@@ -192,11 +188,14 @@ public class GameController : MonoBehaviour
                         mazeColor[i, j] = -1;
                         continue;
                     }
+
                     // i % 2 * 2 + j % 2 == 0
                     int r = Random.Range(0, corners.Length);
                     Instantiate(corners[r],
-                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
-                                Quaternion.Euler(edgeBaseRotation.x, 90f * Random.Range(0, 4) + edgeBaseRotation.y, edgeBaseRotation.z));
+                        new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position +
+                        edgeBasePosition,
+                        Quaternion.Euler(edgeBaseRotation.x, 90f * Random.Range(0, 4) + edgeBaseRotation.y,
+                            edgeBaseRotation.z));
                     mazeColor[i, j] = r;
                 }
             }
@@ -211,8 +210,10 @@ public class GameController : MonoBehaviour
                     if (j + 1 < _maze.GetLength(1) && mazeColor[i, j - 1] == mazeColor[i, j + 1])
                         r = mazeColor[i, j - 1];
                     Instantiate(edges[r],
-                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
-                                Quaternion.Euler(edgeBaseRotation.x, 90f + 180f * Random.Range(0, 2) + edgeBaseRotation.y, edgeBaseRotation.z));
+                        new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position +
+                        edgeBasePosition,
+                        Quaternion.Euler(edgeBaseRotation.x, 90f + 180f * Random.Range(0, 2) + edgeBaseRotation.y,
+                            edgeBaseRotation.z));
                 }
             }
 
@@ -226,8 +227,10 @@ public class GameController : MonoBehaviour
                     if (i + 1 < _maze.GetLength(0) && mazeColor[i - 1, j] == mazeColor[i + 1, j])
                         r = mazeColor[i - 1, j];
                     Instantiate(edges[r],
-                        new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
-                        Quaternion.Euler(edgeBaseRotation.x, 180f * Random.Range(0, 2) + edgeBaseRotation.y, edgeBaseRotation.z));
+                        new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position +
+                        edgeBasePosition,
+                        Quaternion.Euler(edgeBaseRotation.x, 180f * Random.Range(0, 2) + edgeBaseRotation.y,
+                            edgeBaseRotation.z));
                 }
             }
         }
@@ -243,18 +246,24 @@ public class GameController : MonoBehaviour
                     {
                         case 0:
                             Instantiate(corners[Random.Range(0, corners.Length)],
-                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
-                                Quaternion.Euler(edgeBaseRotation.x, 90f * Random.Range(0, 4) + edgeBaseRotation.y, edgeBaseRotation.z));
+                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position +
+                                edgeBasePosition,
+                                Quaternion.Euler(edgeBaseRotation.x, 90f * Random.Range(0, 4) + edgeBaseRotation.y,
+                                    edgeBaseRotation.z));
                             break;
                         case 1:
                             Instantiate(edges[Random.Range(0, edges.Length)],
-                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
-                                Quaternion.Euler(edgeBaseRotation.x, 90f + 180f * Random.Range(0, 2) + edgeBaseRotation.y, edgeBaseRotation.z));
+                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position +
+                                edgeBasePosition,
+                                Quaternion.Euler(edgeBaseRotation.x,
+                                    90f + 180f * Random.Range(0, 2) + edgeBaseRotation.y, edgeBaseRotation.z));
                             break;
                         case 2:
                             Instantiate(edges[Random.Range(0, edges.Length)],
-                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position + edgeBasePosition,
-                                Quaternion.Euler(edgeBaseRotation.x, 180f * Random.Range(0, 2) + edgeBaseRotation.y, edgeBaseRotation.z));
+                                new Vector3(edgeLength * j / 2f, 0f, edgeLength * i / 2f) + transform.position +
+                                edgeBasePosition,
+                                Quaternion.Euler(edgeBaseRotation.x, 180f * Random.Range(0, 2) + edgeBaseRotation.y,
+                                    edgeBaseRotation.z));
                             break;
                         default:
                             break;
@@ -268,9 +277,9 @@ public class GameController : MonoBehaviour
             new Vector3(edgeLength * (2 * mazeRows - 1) / 2f, 0f, edgeLength * mazeColumns) + transform.position,
             Quaternion.Euler(0, 90f + 180f * Random.Range(0, 2), 0));
 
-        
+
         // This is NPC;;;
-        GameObject p = Instantiate(playerPrefab, 
+        GameObject p = Instantiate(playerPrefab,
             new Vector3(edgeLength * (mazeRows - 0.25f), 0f, edgeLength * (mazeColumns + 0.5f)),
             Quaternion.Euler(0, 216f, 0));
         p.GetComponent<SwatMovement>().enabled = false;
@@ -302,7 +311,6 @@ public class GameController : MonoBehaviour
             CreateColliders(_maze.GetLength(0) + 7, j);
         }
 
-        _time = initialTime;
         _distanceMaxValue = new Vector2(edgeLength * (mazeRows - 1), edgeLength * (mazeColumns - 1));
         _distanceCurrentValue = new Vector2(0f, 0f);
         // distanceMinValue = new Vector2(0f, 0f);
@@ -314,7 +322,7 @@ public class GameController : MonoBehaviour
                 _audioSource.volume = 0f;
                 // _player.audioSource.volume = 0f;
                 playerAudioSource.volume = 0f;
-                mobileSoundButtonText.text = "Sound (Off)";    // TODO
+                mobileSoundButtonText.text = "Sound (Off)"; // TODO
             }
             else
             {
@@ -386,16 +394,19 @@ public class GameController : MonoBehaviour
             SoundButton();
             //MenuButton();
         }
+
         if (_isMenuShowed && Input.GetKeyDown(KeyCode.M))
         {
             MoveButton();
             MenuButton();
         }
+
         if (_isMenuShowed && Input.GetKeyDown(KeyCode.N))
         {
             NewButton();
             MenuButton();
         }
+
         if (_isMenuShowed && Input.GetKeyDown(KeyCode.Q))
         {
             QuitButton();
@@ -408,80 +419,25 @@ public class GameController : MonoBehaviour
     {
         if (!_hasExited)
         {
-            _time -= Time.fixedDeltaTime;
-            if (!_isTimeout && _time <= 0f)
-            {
-                _isTimeout = true;
-                _audioSource.clip = timeoutClip;
-                _audioSource.loop = true;
-                _audioSource.Play();
-            }
         }
-        
+
         // TODO: 텍스트 빌딩
 
-        int sign = (int)Mathf.Sign(_time);
-        int hour = Mathf.Abs((int)_time / 3600);
-        int minute2 = Mathf.Abs((int)_time % 3600 / 600);
-        int minute1 = Mathf.Abs((int)_time / 60 % 10);
-        int second2 = Mathf.Abs((int)_time % 60 / 10);
-        int second1 = Mathf.Abs((int)_time % 10);
-        int secondDot1 = Mathf.Abs((int)(_time * 10) % 10);
-        int secondDot2 = Mathf.Abs((int)(_time * 100) % 10);
 
         StringBuilder sb = new StringBuilder();
 
-        if (sign <= 0)
+        if (mazeColumns == 12 && mazeRows == 12)
         {
-            sb.Append("<color=#FF1100>-");
+            sb.Append("Level: Easy");
         }
-        else
+        else if (mazeColumns == 18 && mazeRows == 18)
         {
-            if (_hasExited) sb.Append("<color=#00FF57>");
-            else sb.Clear();
+            sb.Append("Level: Normal");
         }
-
-        if (hour > 0)
-            sb.AppendFormat("{0}:{1}{2}:{3}{4}.{5}{6}\n", hour, minute2, minute1, second2, second1, secondDot1, secondDot2);
-        else if (minute2 > 0)
-            sb.AppendFormat("{0}{1}:{2}{3}.{4}{5}\n", minute2, minute1, second2, second1, secondDot1, secondDot2);
-        else
-            sb.AppendFormat("{0}:{1}{2}.{3}{4}\n", minute1, second2, second1, secondDot1, secondDot2);
-
-        if (sign <= 0 || _hasExited)
-            sb.Append("</color>");
-
-        if (_time <= 0f)
+        else if (mazeColumns == 24 && mazeRows == 24)
         {
-            sb.Append("Time out!");
+            sb.Append("Level: Hard");
         }
-        else if (_hasExited)
-        {
-            sb.Append("Congratulations!");
-        }
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-        else if (!_hasPressedShift)
-        {
-            sb.Append("Press 'Left Shift' or 'Right Click' to dash.");
-        }
-#endif
-        else
-        {
-            if (mazeColumns == 12 && mazeRows == 12)
-            {
-                sb.Append("Level: Easy");
-            }
-            else if (mazeColumns == 18 && mazeRows == 18)
-            {
-                sb.Append("Level: Normal");
-            }
-            else if (mazeColumns == 24 && mazeRows == 24)
-            {
-                sb.Append("Level: Hard");
-            }
-        }
-
-        timeText.text = sb.ToString();
 
         Vector3 position = playerAudioSource.transform.position;
         _distanceCurrentValue = new Vector2(
@@ -498,7 +454,7 @@ public class GameController : MonoBehaviour
             _isMenuShowed = false;
 #if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
             pcMenu.SetActive(false);
-            pcMenuButtonText.text = "Menu";    // TODO
+            pcMenuButtonText.text = "Menu"; // TODO
             Cursor.visible = false;
 #else
             mobileMenu.SetActive(false);
