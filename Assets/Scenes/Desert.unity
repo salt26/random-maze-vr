@@ -1479,25 +1479,25 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 315aa6ef76c3bf243877a1a8235826a3, type: 3}
   - {fileID: 8300000, guid: 752ebb968a012624ca26d92c3a5dc9bd, type: 3}
   - {fileID: 8300000, guid: 1fd9bd1946753a74abe127eceb323f51, type: 3}
-  mobileMenuUI: {fileID: 0}
-  mobileMenuButton: {fileID: 0}
-  mobileMenuButtonText: {fileID: 0}
-  mobileMenu: {fileID: 0}
-  mobileSoundButtonText: {fileID: 0}
-  pcMenuUI: {fileID: 0}
-  pcMenuButton: {fileID: 0}
-  pcMenuButtonText: {fileID: 0}
-  pcMenu: {fileID: 0}
-  pcSoundButtonText: {fileID: 0}
-  timeText: {fileID: 0}
-  progressSlider: {fileID: 0}
+  mobileMenuUI: {fileID: 1842236008}
+  mobileMenuButton: {fileID: 1842236007}
+  mobileMenuButtonText: {fileID: 1842236006}
+  mobileMenu: {fileID: 1842236005}
+  mobileSoundButtonText: {fileID: 1842236004}
+  pcMenuUI: {fileID: 1189317050}
+  pcMenuButton: {fileID: 1189317049}
+  pcMenuButtonText: {fileID: 1189317048}
+  pcMenu: {fileID: 1189317047}
+  pcSoundButtonText: {fileID: 1189317046}
+  timeText: {fileID: 421469780}
+  progressSlider: {fileID: 376587836}
   exitClip: {fileID: 8300000, guid: f19ceb487ce540d4485083df793dde6b, type: 3}
   timeoutClip: {fileID: 8300000, guid: 149d5bd22e8581440be896ca0df2e469, type: 3}
   mainCamera: {fileID: 0}
-  touchInput: {fileID: 0}
-  xrOrigin: {fileID: 0}
-  playerAudioSource: {fileID: 0}
-  cameraOffsetTransform: {fileID: 0}
+  touchInput: {fileID: 196343300}
+  xrOrigin: {fileID: 6779845596570854696}
+  playerAudioSource: {fileID: 6779845596570854700}
+  cameraOffsetTransform: {fileID: 6779845596570854699}
   initialTime: 305
   initialPlayerPosition: {x: 0, y: 1.36144, z: 0}
   initialXrOriginPosition: {x: 2.3, y: 0, z: -4}
@@ -1507,7 +1507,7 @@ MonoBehaviour:
   mazeInnerColumns: 3
   mazeInnerRows: 3
   mazeDropProbability: 0
-  sam: {fileID: 0}
+  sam: {fileID: 6779845596570854701}
 --- !u!82 &930502570
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3089,6 +3089,11 @@ PrefabInstance:
       insertIndex: 3
       addedObject: {fileID: 6779845596570854698}
   m_SourcePrefab: {fileID: 100100000, guid: 8ddbbb46d03be754fa45947026e4c8b9, type: 3}
+--- !u!1 &6779845596570854696 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3729047978970207096, guid: 8ddbbb46d03be754fa45947026e4c8b9, type: 3}
+  m_PrefabInstance: {fileID: 6779845596570854695}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6779845596570854697 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6999704011540626084, guid: 8ddbbb46d03be754fa45947026e4c8b9, type: 3}
@@ -3119,6 +3124,27 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.76072, z: 0}
+--- !u!4 &6779845596570854699 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2600648409648682502, guid: 8ddbbb46d03be754fa45947026e4c8b9, type: 3}
+  m_PrefabInstance: {fileID: 6779845596570854695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &6779845596570854700 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 950669571515355991, guid: 8ddbbb46d03be754fa45947026e4c8b9, type: 3}
+  m_PrefabInstance: {fileID: 6779845596570854695}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6779845596570854701 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2963237180085960701, guid: 8ddbbb46d03be754fa45947026e4c8b9, type: 3}
+  m_PrefabInstance: {fileID: 6779845596570854695}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ccd3ec964683b4fa6061f7ec221823, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
