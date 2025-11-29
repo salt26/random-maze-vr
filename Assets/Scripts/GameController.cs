@@ -424,9 +424,6 @@ public class GameController : MonoBehaviour
             if (!_isTimeout && _time <= 0f)
             {
                 _isTimeout = true;
-                _audioSource.clip = timeoutClip;
-                _audioSource.loop = true;
-                _audioSource.Play();
             }
         }
         

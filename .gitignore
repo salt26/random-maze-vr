@@ -80,3 +80,6 @@ Ignore/
 
 .vscode/
 **/.DS_Store
+
+## Ignore the CLAUDE.md file
+CLAUDE.md
