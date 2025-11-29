@@ -3599,6 +3599,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IllusionColorSwitch
   mainCamera: {fileID: 1146271475}
+  floorRenderers:
+  - {fileID: 1741806855}
+  - {fileID: 148680841}
+  - {fileID: 1298952788}
+  - {fileID: 336305900}
+  blackMaterial: {fileID: 2100000, guid: 6940a2258f521ec48b7ecc537f739b39, type: 2}
+  whiteMaterial: {fileID: 2100000, guid: 3be10f6d43ec0e1429882938d7efcf3b, type: 2}
 --- !u!4 &2119487277
 Transform:
   m_ObjectHideFlags: 0

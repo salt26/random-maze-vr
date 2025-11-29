@@ -11,7 +11,7 @@ public class IllusionColorSwitch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera.backgroundColor = Color.black;
+        mainCamera.backgroundColor = Color.white;
         foreach (MeshRenderer renderer in floorRenderers)
         {
             renderer.material = whiteMaterial;
