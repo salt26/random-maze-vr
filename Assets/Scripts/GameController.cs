@@ -22,20 +22,11 @@ public class GameController : MonoBehaviour
     public GameObject colliderExit;
     public GameObject playerPrefab;
     public List<AudioClip> footsteps;
-    public GameObject pcMenuUI;
-    public Button pcMenuButton;
-    public TMP_Text pcMenuButtonText;
-    public GameObject pcMenu;
-    public TMP_Text pcSoundButtonText;
     public DistanceSlider progressSlider;
     public AudioClip exitClip;
-    public Camera mainCamera;
     public GameObject xrOrigin;
     public AudioSource playerAudioSource;
 
-    public Transform cameraOffsetTransform;
-
-    public Vector3 initialPlayerPosition;
     public Vector3 initialXrOriginPosition;
 
     public bool mazeFromFile = false;
@@ -48,14 +39,9 @@ public class GameController : MonoBehaviour
 
     private int[,] _maze;
     private bool _hasExited = false;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-    private bool _hasPressedShift = false;
-#endif
     private bool _isMenuShowed = false;
     private Vector2 _distanceMaxValue;
     private Vector2 _distanceCurrentValue;
-
-    public SwingingArmMotion sam;
 
     //private SwatMovement _player;
     private AudioSource _audioSource;
@@ -84,24 +70,17 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        pcMenuUI.SetActive(false);
         if (MainController.mc.isSoundOff)
         {
             _audioSource.volume = 0f;
             //_player.audioSource.volume = 0f;
             playerAudioSource.volume = 0f;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "Sound (Off)";
-#endif
         }
         else
         {
             _audioSource.volume = 1f;
             // _player.audioSource.volume = 1f;
             playerAudioSource.volume = 1f;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "Sound (On)";
-#endif
         }
 
         MazeGenerator mMazeGenerator = new MazeGenerator();
@@ -270,7 +249,6 @@ public class GameController : MonoBehaviour
         GameObject p = Instantiate(playerPrefab,
             new Vector3(edgeLength * (mazeRows - 0.25f), 0f, edgeLength * (mazeColumns + 0.5f)),
             Quaternion.Euler(0, 216f, 0));
-        p.GetComponent<SwatMovement>().enabled = false;
         Animator pAnimator = p.GetComponent<Animator>();
         pAnimator.SetInteger(State, 4);
         pAnimator.SetBool(IsSprinting, false);
@@ -360,71 +338,9 @@ public class GameController : MonoBehaviour
             MenuButton();
         }
     }
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-    public void SetShiftPressed()
-    {
-        _hasPressedShift = true;
-    }
-#endif
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            MenuButton();
-        }
-
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-        if (_isMenuShowed && Input.GetKeyDown(KeyCode.O))
-        {
-            SoundButton();
-            //MenuButton();
-        }
-
-        if (_isMenuShowed && Input.GetKeyDown(KeyCode.M))
-        {
-            MoveButton();
-            MenuButton();
-        }
-
-        if (_isMenuShowed && Input.GetKeyDown(KeyCode.N))
-        {
-            NewButton();
-            MenuButton();
-        }
-
-        if (_isMenuShowed && Input.GetKeyDown(KeyCode.Q))
-        {
-            QuitButton();
-            MenuButton();
-        }
-#endif
-    }
 
     private void FixedUpdate()
     {
-        if (!_hasExited)
-        {
-        }
-
-        // TODO: 텍스트 빌딩
-
-
-        StringBuilder sb = new StringBuilder();
-
-        if (mazeColumns == 12 && mazeRows == 12)
-        {
-            sb.Append("Level: Easy");
-        }
-        else if (mazeColumns == 18 && mazeRows == 18)
-        {
-            sb.Append("Level: Normal");
-        }
-        else if (mazeColumns == 24 && mazeRows == 24)
-        {
-            sb.Append("Level: Hard");
-        }
-
         Vector3 position = playerAudioSource.transform.position;
         _distanceCurrentValue = new Vector2(
             position.x / _distanceMaxValue.x,
@@ -435,37 +351,26 @@ public class GameController : MonoBehaviour
 
     public void MenuButton()
     {
+        // TODO: Show and hide menu in VR
         if (_isMenuShowed)
         {
             _isMenuShowed = false;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcMenu.SetActive(false);
-            pcMenuButtonText.text = "Menu"; // TODO
-            Cursor.visible = false;
-#endif
         }
         else
         {
             _isMenuShowed = true;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcMenu.SetActive(true);
-            pcMenuButtonText.text = "Hide Menu";
-            Cursor.visible = false;
-#endif
         }
     }
 
     public void SoundButton()
     {
+        // TODO: display mute state properly
         if (!MainController.mc.isSoundOff)
         {
             MainController.mc.isSoundOff = true;
             _audioSource.volume = 0f;
             // _player.audioSource.volume = 0f;
             playerAudioSource.volume = 0f;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "Sound (Off)";
-#endif
         }
         else
         {
@@ -473,9 +378,6 @@ public class GameController : MonoBehaviour
             _audioSource.volume = 1f;
             // _player.audioSource.volume = 1f;
             playerAudioSource.volume = 1f;
-#if !((UNITY_ANDROID || UNITY_IOS || UNITY_WP8 || UNITY_WP8_1))
-            pcSoundButtonText.text = "Sound (On)";
-#endif
         }
     }
 

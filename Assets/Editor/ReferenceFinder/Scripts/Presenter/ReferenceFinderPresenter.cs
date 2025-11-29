@@ -345,9 +345,9 @@ namespace ReferenceFinder.Editor
         private bool CheckHierarchyCheckRequirements()
         {
             return _currentSearchType == SearchType.AutoGameObject
-                && _objectData != null
-                && _objectData.FoundObject is GameObject gameObject
-                && !gameObject.IsPrefabAsset();
+                 && _objectData != null
+                 && _objectData.FoundObject is GameObject gameObject
+                 && !gameObject.IsPrefabAsset();
         }
 
         /// <summary>
