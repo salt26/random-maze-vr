@@ -79,3 +79,8 @@ Ignore/
 /Assets/Scenes/Desert/LightingData.asset
 
 .vscode/
+
+CLAUDE.md
+Assets/_Recovery/
+Assets/_Recovery.meta
+**/.DS_Store
